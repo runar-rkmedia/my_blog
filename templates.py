@@ -12,59 +12,65 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+import jinja2
 import webapp2
 
-form_html = """
-<form action="">
-    <h2>Add a Food</h2>
-    <input type="text" name="food"/>
-    %s
-    <button>Add</button>
-</form>
-"""
+template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir))
 
-hidden_html = """
-<input type="hidden" name="food" value="%s" />
-"""
 
-item_html = """
-<li>%s</li>
-"""
-
-shopping_list_html = """
-<br />
-<br />
-<h2>Shopping list</h2>
-<ul>
-%s
-</ul>
-"""
+# hidden_html = """
+# <input type="hidden" name="food" value="%s" />
+# """
+#
+# item_html = """
+# <li>%s</li>
+# """
+#
+# shopping_list_html = """
+# <br />
+# <br />
+# <h2>Shopping list</h2>
+# <ul>
+# %s
+# </ul>
+# """
 
 
 class Handler(webapp2.RequestHandler):
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
 
+    def render_str(self, template, **params):
+        t = jinja_env.get_template(template)
+        return t.render(params)
+
+    def render(self, template, **kw):
+        self.write(self.render_str(template, **kw))
+
 class MainPage(Handler):
 
 
     def get(self):
-        output = form_html
-        output_hidden = ""
+        self.render("shopping_list.html")
 
-        items = self.request.get_all("food")
-        output_items = ""
-        if items:
-            for item in items:
-                item = str(item)
-                output_hidden += hidden_html % item
-                output_items += item_html % item
-
-            output_shopping = shopping_list_html % output_items
-            output += output_shopping
-
-        output = output % output_hidden
-        self.write(output)
+        # output = form_html
+        # output_hidden = ""
+        #
+        # items = self.request.get_all("food")
+        # output_items = ""
+        # if items:
+        #     for item in items:
+        #         item = str(item)
+        #         output_hidden += hidden_html % item
+        #         output_items += item_html % item
+        #
+        #     output_shopping = shopping_list_html % output_items
+        #     output += output_shopping
+        #
+        # output = output % output_hidden
+        # self.write(output)
 
 
 

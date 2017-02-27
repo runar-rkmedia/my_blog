@@ -7,3 +7,7 @@ threadsafe: true
 handlers:
 - url: /.*
   script: templates.app
+
+libraries:
+- name: jinja2
+  version: latest
