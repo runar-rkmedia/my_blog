@@ -61,8 +61,19 @@ class Rot13(Handler):
         text = rot13.rot_13(text)
         self.render("rot13.html", text=text)
 
+class SighUp(Handler):
+
+    def get(self):
+        self.render("signup.html")
+
+    def post(self):
+        username = self.request.get("username")
+        email = self.request.get("email")
+        self.render("signup.html", text=text)
+
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/fizzbuzz', FizzBuzz),
     ('/rot13', Rot13),
+    ('/signup', SighUp),
 ], debug=True)

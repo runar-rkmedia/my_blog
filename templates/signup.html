@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Signup form</h2>
+    <form action="" method="post">
+        <label for="username">
+            Username
+            <input type="text" name="username" value=""><br></label>
+        <label for="username">
+            Password:
+            <input type="password" name="password" value=""><br></label>
+        <label for="email">
+            Email-address:
+            <input type="email" name="email" value=""><br>
+        </label>
+        <input type="submit">
+    </form>
+    Returned text is:
+    {{ text }}
+{% endblock %}
