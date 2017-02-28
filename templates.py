@@ -15,6 +15,7 @@
 import os
 import jinja2
 import webapp2
+import rot13
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(
@@ -50,7 +51,18 @@ class FizzBuzz(Handler):
             n = int(n)
         self.render("fizzbuzz.html", n=n)
 
+class Rot13(Handler):
+
+    def get(self):
+        self.render("rot13.html")
+
+    def post(self):
+        text = self.request.get("text")
+        text = rot13.rot_13(text)
+        self.render("rot13.html", text=text)
+
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/fizzbuzz', FizzBuzz),
+    ('/rot13', Rot13),
 ], debug=True)
