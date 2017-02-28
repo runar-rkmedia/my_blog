@@ -1,21 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form action="">
-    <h2>Add a Food</h2>
-    <input type="text" name="food"/>
-    {% if items %}
-      {% for item in items %}
-        <input type="hidden" name="food" value="{{ item }}">
+    {% if n %}
+      <ol>
+      {% for x in range(1, n+1) %}
+        <li>
+          {% if not x % (3*5) %}
+          FizzBuzz
+          {% elif not x % 3 %}
+          Fizz
+          {% elif not x % 5 %}
+          Buzz
+          {% else %}
+          {{ x }}
+          {% endif %}
+        </li>
       {% endfor %}
+      </ol>
     {% endif %}
-    <button>Add</button>
-    {% if items %}
-    <ol>
-      {% for item in items[::-1] %}
-        <li>{{ item  }}</li>
-      {% endfor %}
-    </ol>
-    {% endif %}
-</form>
 {% endblock %}
