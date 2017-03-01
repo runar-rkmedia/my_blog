@@ -68,6 +68,12 @@ class Rot13(Handler):
         self.render("rot13.html", text=text)
 
 
+class Thanks(Handler):
+
+    def get(self):
+        username = self.request.get("username")
+        self.render("thanks.html", username=username)
+
 class SighUp(Handler):
 
     def get(self):
@@ -102,11 +108,12 @@ class SighUp(Handler):
                         email=email,
                         )
         else:
-            self.redirect("/thanks", username)
+            self.redirect("/thanks?username=" + username)
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/fizzbuzz', FizzBuzz),
     ('/rot13', Rot13),
     ('/signup', SighUp),
+    ('/thanks', Thanks),
 ], debug=True)
