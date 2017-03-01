@@ -74,16 +74,19 @@ class SighUp(Handler):
         username = self.request.get("username")
         email = self.request.get("email")
         password = self.request.get("password")
+        verify = self.request.get("verify")
 
         username_valid = verify_signup.valid_username(username)
-        email_valid = verify_signup.valid_email(email)
         password_valid = verify_signup.valid_password(password)
+        passwords_matches = verify_signup.verify_passwords_matches(password, verify)
+        email_valid = verify_signup.valid_email(email)
 
         print username_valid, password_valid, email_valid
-        if not(username_valid and password_valid and email_valid):
+        if not(username_valid and password_valid and passwords_matches and email_valid):
             self.render("signup.html",
                         username_valid=username_valid,
                          password_valid=password_valid,
+                         passwords_matches=passwords_matches,
                          email_valid=email_valid,
                          username=username,
                          email=email,

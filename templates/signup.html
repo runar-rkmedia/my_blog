@@ -1,40 +1,44 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>Signup form</h2>
-    <form action="" method="post">
-        <label for="username">
-            Username
-            <input type="text" name="username" value="{{ username }}">
-            {% if not username_valid %}
-            <span class="error-msg">Username is invalid</span>
-            {% endif %}
-            <br>
-        </label>
-        <label for="password">
-            Password:
-            <input type="password" name="password" value="">
-            {% if not password_valid %}
-            <span class="error-msg">Password is invalid</span>
-            {% endif %}
-            <br>
-        </label>
-        <label for="password2">
-            Verify password:
-            <input type="password" name="verify" value="">
-            {% if not password_valid %}
-            <span class="error-msg">Password is invalid</span>
-            {% endif %}
-            <br>
-        </label>
-        <label for="email">
-            Email-address:
-            <input type="text" name="email" value="{{ email }}">
-            {% if not email_valid %}
-            <span class="error-msg">Email is invalid</span>
-            {% endif %}
-            <br>
-        </label>
-        <input type="submit">
-    </form>
+<style type="text/css">
+  .label {text-align: right}
+  .error-msg {color: red}
+</style>
+<h2>Signup form</h2>
+<form method="post">
+  <table>
+    <tbody>
+      <tr>
+        <td class="label">Username</td>
+        <td><input type="text" name="username" value="{{ username }}"></td>
+        {% if not username_valid %}
+        <td class="error-msg">Username is not valid!</td>
+        {% endif %}
+      </tr>
+      <tr>
+        <td class="label">Password</td>
+        <td><input type="password" name="password"></td>
+        {% if not password_valid %}
+        <td class="error-msg">Password is not valid!</td>
+        {% endif %}
+      </tr>
+      <tr>
+        <td class="label">Verify Password</td>
+        <td><input type="password" name="verify"></td>
+        {% if not passwords_matches %}
+        <td class="error-msg">Passwords does not match!</td>
+        {% endif %}
+      </tr>
+      <tr>
+        <td class="label">Email</td>
+        <td><input type="text" name="email" value="{{ email }}"></td>
+        {% if not email_valid %}
+        <td class="error-msg">Email is not valid!</td>
+        {% endif %}
+      </tr>
+    </tbody>
+  </table>
+<input type="submit">
+</form>
 {% endblock %}
