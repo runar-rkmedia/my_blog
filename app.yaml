@@ -5,6 +5,13 @@ api_version: 1
 threadsafe: true
 
 handlers:
+- url: /css
+  static_dir: css
+
+- url: /css/(.*\.(css))
+  static_files: css/\1
+  upload: css/(.*\.(css))
+
 - url: /.*
   script: templates.app
 
