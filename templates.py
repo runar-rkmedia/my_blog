@@ -89,8 +89,12 @@ class BlogEntity(db.Model):
 
 class Blogs(Handler):
 
+    def render_this(self, title="", article="", error=""):
+        articles = db.GqlQuery("SELECT * FROM BlogEntity ORDER BY created DESC")
+        self.render("blogs.html", title=title, article=article, error=error, articles = articles)
+
     def get(self):
-        self.render("blogs.html")
+        self.render_this()
 
 class NewBlogPoat(Handler):
 
