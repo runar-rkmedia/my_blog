@@ -5,16 +5,36 @@
     <form action="" method="post">
         <label for="username">
             Username
-            <input type="text" name="username" value=""><br></label>
-        <label for="username">
+            <input type="text" name="username" value="{{ username }}">
+            {% if not username_valid %}
+            <span class="error-msg">Username is invalid</span>
+            {% endif %}
+            <br>
+        </label>
+        <label for="password">
             Password:
-            <input type="password" name="password" value=""><br></label>
+            <input type="password" name="password" value="">
+            {% if not password_valid %}
+            <span class="error-msg">Password is invalid</span>
+            {% endif %}
+            <br>
+        </label>
+        <label for="password2">
+            Verify password:
+            <input type="password" name="verify" value="">
+            {% if not password_valid %}
+            <span class="error-msg">Password is invalid</span>
+            {% endif %}
+            <br>
+        </label>
         <label for="email">
             Email-address:
-            <input type="email" name="email" value=""><br>
+            <input type="text" name="email" value="{{ email }}">
+            {% if not email_valid %}
+            <span class="error-msg">Email is invalid</span>
+            {% endif %}
+            <br>
         </label>
         <input type="submit">
     </form>
-    Returned text is:
-    {{ text }}
 {% endblock %}

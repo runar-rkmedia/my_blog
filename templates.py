@@ -12,10 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import os
 import jinja2
 import webapp2
 import rot13
+import verify_signup
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(
@@ -69,7 +73,23 @@ class SighUp(Handler):
     def post(self):
         username = self.request.get("username")
         email = self.request.get("email")
-        self.render("signup.html", text=text)
+        password = self.request.get("password")
+
+        username_valid = verify_signup.valid_username(username)
+        email_valid = verify_signup.valid_email(email)
+        password_valid = verify_signup.valid_password(password)
+
+        print username_valid, password_valid, email_valid
+        if not(username_valid and password_valid and email_valid):
+            self.render("signup.html",
+                        username_valid=username_valid,
+                         password_valid=password_valid,
+                         email_valid=email_valid,
+                         username=username,
+                         email=email,
+                         )
+        else:
+            self.redirect("/thanks")
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
