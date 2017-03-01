@@ -74,6 +74,11 @@ class Thanks(Handler):
         username = self.request.get("username")
         self.render("thanks.html", username=username)
 
+class AsciiChan(Handler):
+
+    def get(self):
+        self.render("ascii_chan.html")
+
 class SighUp(Handler):
 
     def get(self):
@@ -116,4 +121,5 @@ app = webapp2.WSGIApplication([
     ('/rot13', Rot13),
     ('/signup', SighUp),
     ('/thanks', Thanks),
+    ('/ascii_chan', AsciiChan),
 ], debug=True)
