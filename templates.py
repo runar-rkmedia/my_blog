@@ -81,12 +81,41 @@ class Art(db.Model):
     art = db.TextProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
 
+class BlogEntity(db.Model):
+    title = db.StringProperty(required = True)
+    article = db.TextProperty(required = True)
+    created = db.DateTimeProperty(auto_now_add = True)
+
+
+class Blogs(Handler):
+
+    def get(self):
+        self.render("blogs.html")
+
+class NewBlogPoat(Handler):
+
+    def render_this(self, title="", article="", error=""):
+        self.render("new_blog_post.html", title=title, article=article, error=error)
+
+    def get(self):
+        self.render_this()
+
+    def post(self):
+        title = self.request.get("title")
+        article = self.request.get("article")
+
+        if title and article:
+            a = BlogEntity(title=title, article=article)
+            a.put()
+            self.redirect('/blogs')
+        else:
+            error = "we need both a title and an article!"
+            self.render_this(title=title, article=article, error=error)
+
 class AsciiChan(Handler):
 
     def render_this(self, title="", art="", error=""):
         arts = db.GqlQuery("SELECT * FROM Art ORDER BY created DESC")
-
-
         self.render("ascii_chan.html", title=title, art=art, error=error, arts = arts)
 
 
@@ -148,4 +177,6 @@ app = webapp2.WSGIApplication([
     ('/signup', SighUp),
     ('/thanks', Thanks),
     ('/ascii_chan', AsciiChan),
+    ('/new_blog_post', NewBlogPoat),
+    ('/blogs', Blogs),
 ], debug=True)
