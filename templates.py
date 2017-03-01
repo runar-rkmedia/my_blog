@@ -81,7 +81,8 @@ class SighUp(Handler):
         passwords_matches = verify_signup.verify_passwords_matches(password, verify)
         email_valid = verify_signup.valid_email(email)
 
-        print username_valid, password_valid, email_valid
+        if email == "":
+            email_valid = True
         if not(username_valid and password_valid and passwords_matches and email_valid):
             self.render("signup.html",
                         username_valid=username_valid,
@@ -92,7 +93,7 @@ class SighUp(Handler):
                          email=email,
                          )
         else:
-            self.redirect("/thanks")
+            self.redirect("/thanks", username)
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),

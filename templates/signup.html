@@ -31,10 +31,10 @@
         {% endif %}
       </tr>
       <tr>
-        <td class="label">Email</td>
+        <td class="label">Email (optional)</td>
         <td><input type="text" name="email" value="{{ email }}"></td>
         {% if not email_valid %}
-        <td class="error-msg">Email is not valid!</td>
+        <td class="error-msg">Email is not valid! If you don't want to give one, just leave the field blank.</td>
         {% endif %}
       </tr>
     </tbody>
