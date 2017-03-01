@@ -68,7 +68,12 @@ class Rot13(Handler):
 class SighUp(Handler):
 
     def get(self):
-        self.render("signup.html")
+        self.render("signup.html",
+        username_valid=True,
+         password_valid=True,
+         passwords_matches=True,
+         email_valid=True,
+         )
 
     def post(self):
         username = self.request.get("username")
