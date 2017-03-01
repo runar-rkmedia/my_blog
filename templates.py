@@ -47,6 +47,7 @@ class MainPage(Handler):
         items = self.request.get_all("food")
         self.render("shopping_list.html", items=items)
 
+
 class FizzBuzz(Handler):
 
     def get(self):
@@ -54,6 +55,7 @@ class FizzBuzz(Handler):
         if n and n.isdigit():
             n = int(n)
         self.render("fizzbuzz.html", n=n)
+
 
 class Rot13(Handler):
 
@@ -65,15 +67,16 @@ class Rot13(Handler):
         text = rot13.rot_13(text)
         self.render("rot13.html", text=text)
 
+
 class SighUp(Handler):
 
     def get(self):
         self.render("signup.html",
-        username_valid=True,
-         password_valid=True,
-         passwords_matches=True,
-         email_valid=True,
-         )
+                    username_valid=True,
+                    password_valid=True,
+                    passwords_matches=True,
+                    email_valid=True,
+                    )
 
     def post(self):
         username = self.request.get("username")
@@ -83,7 +86,8 @@ class SighUp(Handler):
 
         username_valid = verify_signup.valid_username(username)
         password_valid = verify_signup.valid_password(password)
-        passwords_matches = verify_signup.verify_passwords_matches(password, verify)
+        passwords_matches = verify_signup.verify_passwords_matches(
+            password, verify)
         email_valid = verify_signup.valid_email(email)
 
         if email == "":
@@ -91,12 +95,12 @@ class SighUp(Handler):
         if not(username_valid and password_valid and passwords_matches and email_valid):
             self.render("signup.html",
                         username_valid=username_valid,
-                         password_valid=password_valid,
-                         passwords_matches=passwords_matches,
-                         email_valid=email_valid,
-                         username=username,
-                         email=email,
-                         )
+                        password_valid=password_valid,
+                        passwords_matches=passwords_matches,
+                        email_valid=email_valid,
+                        username=username,
+                        email=email,
+                        )
         else:
             self.redirect("/thanks", username)
 
