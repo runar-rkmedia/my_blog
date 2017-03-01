@@ -9,7 +9,6 @@ body {
   font-family: sans-serif;
   width: 800px;
   margin: 0 auto;
-  padding: 10px;
 }
 
 .error {
@@ -20,4 +19,38 @@ body {
 label {
   display: block;
   font-size: 20px;
+}
+
+.title-input {
+  width: 400px;
+  /*height: 200px;*/
+  font-size: 17px;
+  font-family: monospace;
+}
+
+input[type=submit] {
+  font-size: 24px;
+}
+
+textarea {
+  height: 600px;
+  font-size: 14px;
+  font-family: monospace;
+}
+hr {
+  margin: 20px auto;
+
+}
+
+.art + art {
+  margin-top: 20px;
+}
+.art-title {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.art-body {
+  margin: 0;
+  font-size: 17px;
 }
