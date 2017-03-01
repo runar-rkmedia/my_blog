@@ -20,6 +20,7 @@ import jinja2
 import webapp2
 import rot13
 import verify_signup
+from google.appengine.ext import db
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(
@@ -48,6 +49,7 @@ class MainPage(Handler):
         self.render("shopping_list.html", items=items)
 
 
+
 class FizzBuzz(Handler):
 
     def get(self):
@@ -74,10 +76,34 @@ class Thanks(Handler):
         username = self.request.get("username")
         self.render("thanks.html", username=username)
 
+class Art(db.Model):
+    title = db.StringProperty(required = True)
+    art = db.TextProperty(required = True)
+    created = db.DateTimeProperty(auto_now_add = True)
+
 class AsciiChan(Handler):
 
+    def render_this(self, title="", art="", error=""):
+        arts = db.GqlQuery("SELECT * FROM Art ORDER BY created DESC")
+
+
+        self.render("ascii_chan.html", title=title, art=art, error=error, arts = arts)
+
+
     def get(self):
-        self.render("ascii_chan.html")
+        self.render_this()
+
+    def post(self):
+        title = self.request.get("title")
+        art = self.request.get("art")
+
+        if title and art:
+            a = Art(title=title, art=art)
+            a.put()
+            self.redirect('/ascii_chan')
+        else:
+            error = "we need both a title and some artwork!"
+            self.render_this(title=title, art=art, error=error)
 
 class SighUp(Handler):
 
