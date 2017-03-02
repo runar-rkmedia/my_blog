@@ -5,6 +5,7 @@
     <h2>Blog posts</h2>
     {% for article in articles %}
     {{article.render() | safe}}
-    <hr>
+    <div class="blog-entry-spacer">
+    </div>
     {% endfor %}
 {% endblock %}

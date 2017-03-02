@@ -9,6 +9,7 @@ body {
   font-family: sans-serif;
   width: 800px;
   margin: 0 auto;
+  color: #333;
 }
 
 .error {
@@ -53,4 +54,25 @@ hr {
 .art-body {
   margin: 0;
   font-size: 17px;
+}
+
+.blog-entry-title {
+  position: relative;
+  border-bottom: 3px solid #666;
+}
+
+.blog-entry-created {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  color: #999;
+}
+
+.blog-entry-spacer {
+  width: 50%;
+  /*border-bottom: 3px solid red;*/
+  margin: 25px auto 50px;
+}
+.blog-entry-spacer:last-of-type {
+  display: none;
 }
