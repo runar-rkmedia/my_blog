@@ -20,6 +20,7 @@ import jinja2
 import webapp2
 import rot13
 import verify_signup
+import hmac
 from google.appengine.ext import db
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -36,6 +37,18 @@ def render_str(template, **params):
     t = jinja_env.get_template(template)
     return t.render(params)
 
+def hash_str(s):
+    # TODO: THIS IS NOT SECURE!!!!
+    secret = "fd4c2d860910b3a7b65c576d247292e8"
+    return hmac.new(secret, s).hexdigest()
+
+def make_secure_val(s):
+    return "%s|%s" % (s, hash_str(s))
+
+def check_secure_val(h):
+    val = h.split('|')[0]
+    if h == make_secure_val(val):
+        return val
 
 class Handler(webapp2.RequestHandler):
 
@@ -53,13 +66,19 @@ class MainPage(Handler):
 
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
-        visits = self.request.cookies.get('visits', 0)
-        if not visits.isdigit():
-            visits = 0
-        visits = int(visits)
+        visits = 0
+        visits_cookie_val = self.request.cookies.get('visits')
+        print visits_cookie_val
+        if visits_cookie_val:
+            cookie_val = check_secure_val(visits_cookie_val)
+            if cookie_val:
+                visits = int(cookie_val)
+
         visits += 1
 
-        self.response.headers.add_header('Set-Cookie', 'visits={}'.format(visits))
+        new_cookie_val = make_secure_val(str(visits))
+
+        self.response.headers.add_header('Set-Cookie', 'visits={}'.format(new_cookie_val))
 
         self.write("You've been here %s times" % visits)
         # items = self.request.get_all("food")
