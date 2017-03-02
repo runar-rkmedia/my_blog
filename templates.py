@@ -29,14 +29,21 @@ jinja_env = jinja2.Environment(
 )
 
 
+def blog_key(name='default'):
+    return db.Key.from_path('blogs', name)
+
+def render_str(template, **params):
+    t = jinja_env.get_template(template)
+    return t.render(params)
+
+
 class Handler(webapp2.RequestHandler):
 
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
 
     def render_str(self, template, **params):
-        t = jinja_env.get_template(template)
-        return t.render(params)
+        return render_str(template, **params)
 
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
@@ -47,7 +54,6 @@ class MainPage(Handler):
     def get(self):
         items = self.request.get_all("food")
         self.render("shopping_list.html", items=items)
-
 
 
 class FizzBuzz(Handler):
@@ -76,30 +82,54 @@ class Thanks(Handler):
         username = self.request.get("username")
         self.render("thanks.html", username=username)
 
+
 class Art(db.Model):
-    title = db.StringProperty(required = True)
-    art = db.TextProperty(required = True)
-    created = db.DateTimeProperty(auto_now_add = True)
+    title = db.StringProperty(required=True)
+    art = db.TextProperty(required=True)
+    created = db.DateTimeProperty(auto_now_add=True)
+
 
 class BlogEntity(db.Model):
-    title = db.StringProperty(required = True)
-    article = db.TextProperty(required = True)
-    created = db.DateTimeProperty(auto_now_add = True)
+    title = db.StringProperty(required=True)
+    article = db.TextProperty(required=True)
+    created = db.DateTimeProperty(auto_now_add=True)
+    last_modified = db.DateTimeProperty(auto_now_add=True)
+
+    def render(self):
+        self._render_text = self.article.replace('\n', '<br>')
+        return render_str("view_blog_entry.html", blog_entry=self)
 
 
 class Blogs(Handler):
 
-    def render_this(self, title="", article="", error=""):
-        articles = db.GqlQuery("SELECT * FROM BlogEntity ORDER BY created DESC")
-        self.render("blogs.html", title=title, article=article, error=error, articles = articles)
+    def render_this(self):
+        articles = BlogEntity.all().order('-created')
+        self.render("blogs.html", articles=articles)
 
     def get(self):
         self.render_this()
 
-class NewBlogPoat(Handler):
+
+class BlogPost(Handler):
+
+    def render_this(self, blog_entry):
+        self.render("view_blog_entry.html", blog_entry=blog_entry)
+
+    def get(self, blog_id):
+        blog_id = int(blog_id)
+        blog_entry = BlogEntity.get_by_id(blog_id, parent=blog_key())
+        if not blog_entry:
+            self.error(404)
+            return
+
+        self.render_this(blog_entry)
+
+
+class NewBlogPost(Handler):
 
     def render_this(self, title="", article="", error=""):
-        self.render("new_blog_post.html", title=title, article=article, error=error)
+        self.render("new_blog_post.html", title=title,
+                    article=article, error=error)
 
     def get(self):
         self.render_this()
@@ -109,19 +139,20 @@ class NewBlogPoat(Handler):
         article = self.request.get("article")
 
         if title and article:
-            a = BlogEntity(title=title, article=article)
+            a = BlogEntity(parent=blog_key(), title=title, article=article)
             a.put()
-            self.redirect('/blogs')
+            self.redirect('/blogs/%s' % str(a.key().id()))
         else:
             error = "we need both a title and an article!"
             self.render_this(title=title, article=article, error=error)
+
 
 class AsciiChan(Handler):
 
     def render_this(self, title="", art="", error=""):
         arts = db.GqlQuery("SELECT * FROM Art ORDER BY created DESC")
-        self.render("ascii_chan.html", title=title, art=art, error=error, arts = arts)
-
+        self.render("ascii_chan.html", title=title,
+                    art=art, error=error, arts=arts)
 
     def get(self):
         self.render_this()
@@ -137,6 +168,7 @@ class AsciiChan(Handler):
         else:
             error = "we need both a title and some artwork!"
             self.render_this(title=title, art=art, error=error)
+
 
 class SighUp(Handler):
 
@@ -181,6 +213,7 @@ app = webapp2.WSGIApplication([
     ('/signup', SighUp),
     ('/thanks', Thanks),
     ('/ascii_chan', AsciiChan),
-    ('/new_blog_post', NewBlogPoat),
+    ('/new_blog_post', NewBlogPost),
     ('/blogs', Blogs),
+    ('/blogs/(\d+)', BlogPost),
 ], debug=True)
