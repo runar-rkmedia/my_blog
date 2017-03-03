@@ -1,7 +1,7 @@
 from google.appengine.ext import db
 import hmac
 
-class Art(db.Model):
+class ArtEntity(db.Model):
     title = db.StringProperty(required=True)
     art = db.TextProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
@@ -21,7 +21,7 @@ class BlogEntity(db.Model):
 def blog_key(name='default'):
     return db.Key.from_path('blogs', name)
 
-class User(db.Model):
+class UserEntity(db.Model):
     username = db.StringProperty(required=True)
     email = db.StringProperty(required=False)
     created = db.DateTimeProperty(auto_now_add=True)

@@ -21,7 +21,7 @@ import jinja2
 import webapp2
 import rot13
 import verify_signup
-from Entities import Art, BlogEntity
+from Entities import ArtEntity, BlogEntity, UserEntity, blog_key
 from google.appengine.ext import db
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -164,7 +164,7 @@ class NewBlogPost(Handler):
 class AsciiChan(Handler):
 
     def render_this(self, title="", art="", error=""):
-        arts = db.GqlQuery("SELECT * FROM Art ORDER BY created DESC")
+        arts = db.GqlQuery("SELECT * FROM ArtEntity ORDER BY created DESC")
         self.render("ascii_chan.html", title=title,
                     art=art, error=error, arts=arts)
 
@@ -176,7 +176,7 @@ class AsciiChan(Handler):
         art = self.request.get("art")
 
         if title and art:
-            a = Art(title=title, art=art)
+            a = ArtEntity(title=title, art=art)
             a.put()
             self.redirect('/ascii_chan')
         else:
@@ -208,6 +208,7 @@ class SighUp(Handler):
 
         if email == "":
             email_valid = True
+            email = None
         if not(username_valid and password_valid and passwords_matches and email_valid):
             self.render("signup.html",
                         username_valid=username_valid,
@@ -219,6 +220,7 @@ class SighUp(Handler):
                         )
         else:
             self.redirect("/thanks?username=" + username)
+
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
