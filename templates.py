@@ -114,8 +114,16 @@ class Rot13(Handler):
 class Thanks(Handler):
 
     def get(self):
-        username = self.request.get("username")
-        self.render("thanks.html", username=username)
+        username_cookie_val = self.request.cookies.get('user')
+        username = None
+        if username_cookie_val:
+            cookie_val = check_secure_val(username_cookie_val)
+            if cookie_val:
+                username = cookie_val
+        if not username:
+            self.redirect('/signup')
+        # username = self.request.get("username")
+        self.render("/thanks.html", username=username)
 
 
 
@@ -163,7 +171,7 @@ class NewBlogPost(Handler):
             self.redirect('/blogs/%s' % str(a.key().id()))
         else:
             error = "we need both a title and an article!"
-            self.render_this(title=title, article=article, error=error)
+            self.render_this(title=title, article=article, error=error)q
 
 
 class AsciiChan(Handler):
@@ -228,6 +236,10 @@ class SighUp(Handler):
             user = UserEntity(username=username, password=password,
                               email=email)
             user.put()
+
+            new_cookie_val = make_secure_val(str(username))
+            self.response.headers.add_header('Set-Cookie', 'user={}'.format(new_cookie_val))
+
             self.redirect("/thanks?username=" + username)
 
 
