@@ -219,6 +219,9 @@ class SighUp(Handler):
                         email=email,
                         )
         else:
+            user = UserEntity(username=username, password=password,
+                              email=email)
+            user.put()
             self.redirect("/thanks?username=" + username)
 
 
