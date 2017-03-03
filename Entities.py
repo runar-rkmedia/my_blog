@@ -26,6 +26,7 @@ class UserEntity(db.Model):
     email = db.StringProperty(required=False)
     created = db.DateTimeProperty(auto_now_add=True)
     password = db.StringProperty(required=True)
+    username = db.StringProperty(required=True)
 
     @classmethod
     def hash_password(cls, password):
@@ -42,8 +43,7 @@ class UserEntity(db.Model):
 
     @classmethod
     def by_name(cls, username):
-        thisUserPath = db.Key.from_path('UserEntity', username)
-        thisUser = db.get(thisUserPath)
+        thisUser = UserEntity.all().filter('username =', username).get()
         return thisUser
 
     @classmethod
@@ -51,7 +51,7 @@ class UserEntity(db.Model):
         if email == "":
             email = None
         password = UserEntity.hash_password(password)
-        user = UserEntity(key_name=username, password=password,
+        user = UserEntity(username=username, password=password,
                           email=email)
         user.put()
         return user

@@ -80,6 +80,7 @@ class Handler(webapp2.RequestHandler):
 
     def read_secure_cookie(self, name):
         cookie_value = self.read_cookie(name)
+        print cookie_value
         return cookie_value and check_secure_val(cookie_value)
 
     def delete_cookie(self, name):
@@ -148,7 +149,7 @@ class Rot13(Handler):
 class Thanks(Handler):
 
     def get(self):
-        self.render("/thanks.html", username=self.user.key().name())
+        self.render("/thanks.html", username=self.user.username)
 
 
 class Blogs(Handler):
