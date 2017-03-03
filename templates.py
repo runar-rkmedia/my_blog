@@ -61,8 +61,7 @@ class Handler(webapp2.RequestHandler):
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
 
-
-class MainPage(Handler):
+class VisitCounter(Handler):
 
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
@@ -81,8 +80,13 @@ class MainPage(Handler):
         self.response.headers.add_header('Set-Cookie', 'visits={}'.format(new_cookie_val))
 
         self.write("You've been here %s times" % visits)
-        # items = self.request.get_all("food")
-        # self.render("shopping_list.html", items=items)
+
+
+class MainPage(Handler):
+
+    def get(self):
+        items = self.request.get_all("food")
+        self.render("shopping_list.html", items=items)
 
 
 class FizzBuzz(Handler):
@@ -245,4 +249,5 @@ app = webapp2.WSGIApplication([
     ('/new_blog_post', NewBlogPost),
     ('/blogs', Blogs),
     ('/blogs/(\d+)', BlogPost),
+    ('/counter', VisitCounter),
 ], debug=True)
