@@ -23,6 +23,7 @@ import rot13
 import verify_signup
 from Entities import ArtEntity, BlogEntity, UserEntity, blog_key
 from google.appengine.ext import db
+from lib.pybcrypt import bcrypt # This is slow, one should use regular bcrypt.
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(
@@ -46,6 +47,10 @@ def check_secure_val(h):
     val = h.split('|')[0]
     if h == make_secure_val(val):
         return val
+
+def hash_password(password):
+    return bcrypt.hashpw(password, bcrypt.gensalt())
+    pass
 
 class Handler(webapp2.RequestHandler):
 
@@ -219,6 +224,7 @@ class SighUp(Handler):
                         email=email,
                         )
         else:
+            password = hash_password(password)
             user = UserEntity(username=username, password=password,
                               email=email)
             user.put()

@@ -1,5 +1,4 @@
 from google.appengine.ext import db
-import hmac
 
 class ArtEntity(db.Model):
     title = db.StringProperty(required=True)
