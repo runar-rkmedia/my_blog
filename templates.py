@@ -53,13 +53,11 @@ def check_secure_val(h):
         return val
 
 
-def hash_password(password):
-    return bcrypt.hashpw(password, bcrypt.gensalt())
+
 
 
 def check_username_password(username, password):
-    thisUserPath = db.Key.from_path('UserEntity', username)
-    thisUser = db.get(thisUserPath)
+    thisUser = UserEntity.by_name(username)
     if thisUser:
         return bcrypt.hashpw(password, thisUser.password) == thisUser.password
     else:
@@ -84,7 +82,8 @@ class Handler(webapp2.RequestHandler):
     def delete_cookie(self, name):
         self.set_cookie(name,
                         'deleted',
-                        'path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT')
+                        'path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+                        )
 
     def perform_login(self, username):
         new_cookie_val = make_secure_val(str(username))
@@ -293,10 +292,7 @@ class SignUp(Handler):
                         email=email,
                         )
         else:
-            password = hash_password(password)
-            user = UserEntity(key_name=username, password=password,
-                              email=email)
-            user.put()
+            UserEntity.register(username, password, email)
 
             self.perform_login(username)
 

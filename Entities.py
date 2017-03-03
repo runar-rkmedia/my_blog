@@ -1,4 +1,6 @@
 from google.appengine.ext import db
+from lib.pybcrypt import bcrypt  # This is slow, one should use regular bcrypt.
+
 
 class ArtEntity(db.Model):
     title = db.StringProperty(required=True)
@@ -24,3 +26,27 @@ class UserEntity(db.Model):
     email = db.StringProperty(required=False)
     created = db.DateTimeProperty(auto_now_add=True)
     password = db.StringProperty(required=True)
+
+    @classmethod
+    def hash_password(cls, password):
+        return bcrypt.hashpw(password, bcrypt.gensalt())
+
+    @classmethod
+    def by_name(cls, username):
+        thisUserPath = db.Key.from_path('UserEntity', username)
+        thisUser = db.get(thisUserPath)
+        return thisUser
+
+    @classmethod
+    def register(cls, username, password, email=None):
+        if email == "":
+            email = None
+        password = UserEntity.hash_password(password)
+        user = UserEntity(key_name=username, password=password,
+                          email=email)
+        user.put()
+        return user
+
+    @classmethod
+    def login(cls, uid):
+        return UserEntity.get_by_id(uid, parent=users_key())
