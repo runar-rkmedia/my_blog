@@ -52,8 +52,8 @@ def hash_password(password):
     return bcrypt.hashpw(password, bcrypt.gensalt())
 
 def check_username_password(username, password):
-    thisUser = db.GqlQuery(
-        "SELECT * FROM UserEntity where username='%s'" % (username, )).get()
+    thisUserPath = db.Key.from_path('UserEntity', username)
+    thisUser = db.get(thisUserPath)
     if thisUser:
         return bcrypt.hashpw(password, thisUser.password) == thisUser.password
     else:
@@ -232,7 +232,7 @@ class Login(Handler):
                         username=username,
                         )
 
-class SighUp(Handler):
+class SignUp(Handler):
 
     def get(self):
         self.render("signup.html",
@@ -268,7 +268,7 @@ class SighUp(Handler):
                         )
         else:
             password = hash_password(password)
-            user = UserEntity(username=username, password=password,
+            user = UserEntity(key_name=username, password=password,
                               email=email)
             user.put()
 
@@ -279,7 +279,7 @@ app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/fizzbuzz', FizzBuzz),
     ('/rot13', Rot13),
-    ('/signup', SighUp),
+    ('/signup', SignUp),
     ('/thanks', Thanks),
     ('/ascii_chan', AsciiChan),
     ('/new_blog_post', NewBlogPost),
