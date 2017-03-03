@@ -71,11 +71,15 @@ class Handler(webapp2.RequestHandler):
         self.response.headers.add_header(
             'Set-Cookie', '{}={}; {}'.format(name, value,extra))
 
+    def set_secure_cookie(self, name, value, extra=""):
+        value = make_secure_val(str(value))
+        self.set_cookie(name, value, extra)
+
     def read_cookie(self, name):
         return self.request.cookies.get(name)
 
     def read_secure_cookie(self, name):
-        cookie_value = self.read_cookie('user')
+        cookie_value = self.read_cookie(name)
         return cookie_value and check_secure_val(cookie_value)
 
     def delete_cookie(self, name):
@@ -100,18 +104,12 @@ class VisitCounter(Handler):
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
         visits = 0
-        visits_cookie_val = self.request.cookies.get('visits')
-        print visits_cookie_val
-        if visits_cookie_val:
-            cookie_val = check_secure_val(visits_cookie_val)
-            if cookie_val:
-                visits = int(cookie_val)
+        visits_cookie_val = self.read_secure_cookie('visits')
+        if visits_cookie_val and visits_cookie_val.isdigit():
+            visits = int(visits_cookie_val)
 
         visits += 1
-
-        new_cookie_val = make_secure_val(str(visits))
-
-        self.set_cookie('visits', new_cookie_val)
+        self.set_secure_cookie('visits', visits)
 
         self.write("You've been here %s times" % visits)
 
