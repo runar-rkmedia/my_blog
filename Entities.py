@@ -32,6 +32,15 @@ class UserEntity(db.Model):
         return bcrypt.hashpw(password, bcrypt.gensalt())
 
     @classmethod
+    def check_username_password(cls, username, password):
+        thisUser = UserEntity.by_name(username)
+        if thisUser and bcrypt.hashpw(
+                password,
+                thisUser.password) == thisUser.password:
+            return thisUser
+
+
+    @classmethod
     def by_name(cls, username):
         thisUserPath = db.Key.from_path('UserEntity', username)
         thisUser = db.get(thisUserPath)
@@ -46,7 +55,3 @@ class UserEntity(db.Model):
                           email=email)
         user.put()
         return user
-
-    @classmethod
-    def login(cls, uid):
-        return UserEntity.get_by_id(uid, parent=users_key())
