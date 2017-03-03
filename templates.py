@@ -15,12 +15,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import hmac
 import os
 import jinja2
 import webapp2
 import rot13
 import verify_signup
-import hmac
 from google.appengine.ext import db
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -38,7 +38,7 @@ def render_str(template, **params):
     return t.render(params)
 
 def hash_str(s):
-    # TODO: THIS IS NOT SECURE!!!!
+    # TODO: Should use bcrypt
     secret = "fd4c2d860910b3a7b65c576d247292e8"
     return hmac.new(secret, s).hexdigest()
 
