@@ -20,3 +20,9 @@ class BlogEntity(db.Model):
 
 def blog_key(name='default'):
     return db.Key.from_path('blogs', name)
+
+class User(db.Model):
+    username = db.StringProperty(required=True)
+    email = db.StringProperty(required=False)
+    created = db.DateTimeProperty(auto_now_add=True)
+    password = db.StringProperty(required=True)
