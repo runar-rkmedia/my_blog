@@ -21,6 +21,7 @@ import jinja2
 import webapp2
 import rot13
 import verify_signup
+from Entities import Art, BlogEntity
 from google.appengine.ext import db
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -28,10 +29,6 @@ jinja_env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(template_dir),
     autoescape=True
 )
-
-
-def blog_key(name='default'):
-    return db.Key.from_path('blogs', name)
 
 def render_str(template, **params):
     t = jinja_env.get_template(template)
@@ -115,22 +112,6 @@ class Thanks(Handler):
         username = self.request.get("username")
         self.render("thanks.html", username=username)
 
-
-class Art(db.Model):
-    title = db.StringProperty(required=True)
-    art = db.TextProperty(required=True)
-    created = db.DateTimeProperty(auto_now_add=True)
-
-
-class BlogEntity(db.Model):
-    title = db.StringProperty(required=True)
-    article = db.TextProperty(required=True)
-    created = db.DateTimeProperty(auto_now_add=True)
-    last_modified = db.DateTimeProperty(auto_now_add=True)
-
-    def render(self):
-        self._render_text = self.article.replace('\n', '<br>')
-        return render_str("view_blog_entry.html", blog_entry=self)
 
 
 class Blogs(Handler):
