@@ -23,7 +23,7 @@ import rot13
 import verify_signup
 from Entities import ArtEntity, BlogEntity, UserEntity, blog_key
 from google.appengine.ext import db
-from lib.pybcrypt import bcrypt # This is slow, one should use regular bcrypt.
+from lib.pybcrypt import bcrypt  # This is slow, one should use regular bcrypt.
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(
@@ -31,25 +31,31 @@ jinja_env = jinja2.Environment(
     autoescape=True
 )
 
+
 def render_str(template, **params):
     t = jinja_env.get_template(template)
     return t.render(params)
+
 
 def hash_str(s):
     # TODO: Should use bcrypt
     secret = "fd4c2d860910b3a7b65c576d247292e8"
     return hmac.new(secret, s).hexdigest()
 
+
 def make_secure_val(s):
     return "%s|%s" % (s, hash_str(s))
+
 
 def check_secure_val(h):
     val = h.split('|')[0]
     if h == make_secure_val(val):
         return val
 
+
 def hash_password(password):
     return bcrypt.hashpw(password, bcrypt.gensalt())
+
 
 def check_username_password(username, password):
     thisUserPath = db.Key.from_path('UserEntity', username)
@@ -71,14 +77,21 @@ class Handler(webapp2.RequestHandler):
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
 
-    def set_cookie(self, name, value):
-        self.response.headers.add_header('Set-Cookie', '{}={}'.format(name, value))
+    def set_cookie(self, name, value, extra=""):
+        self.response.headers.add_header(
+            'Set-Cookie', '{}={}; {}'.format(name, value,extra))
+
+    def delete_cookie(self, name):
+        self.set_cookie(name,
+                        'deleted',
+                        'path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT')
 
     def perform_login(self, username):
         new_cookie_val = make_secure_val(str(username))
         self.set_cookie('user', new_cookie_val)
 
         self.redirect("/thanks?username=" + username)
+
 
 class VisitCounter(Handler):
 
@@ -141,7 +154,6 @@ class Thanks(Handler):
             self.redirect('/signup')
         # username = self.request.get("username")
         self.render("/thanks.html", username=username)
-
 
 
 class Blogs(Handler):
@@ -213,6 +225,7 @@ class AsciiChan(Handler):
             error = "we need both a title and some artwork!"
             self.render_this(title=title, art=art, error=error)
 
+
 class Login(Handler):
 
     def get(self):
@@ -232,6 +245,13 @@ class Login(Handler):
                         username=username,
                         )
 
+class Logout(Handler):
+
+    def get(self):
+        self.delete_cookie('user')
+        self.redirect('/signup')
+
+
 class SignUp(Handler):
 
     def get(self):
@@ -249,6 +269,7 @@ class SignUp(Handler):
         verify = self.request.get("verify")
 
         username_valid = verify_signup.valid_username(username)
+        username_already_in_use = not verify_signup.username_not_in_use(username)
         password_valid = verify_signup.valid_password(password)
         passwords_matches = verify_signup.verify_passwords_matches(
             password, verify)
@@ -256,10 +277,15 @@ class SignUp(Handler):
 
         if email == "":
             email_valid = True
-            email = None
-        if not(username_valid and password_valid and passwords_matches and email_valid):
+        if not(
+            username_valid and
+            not username_already_in_use and
+            password_valid and
+            passwords_matches and
+            email_valid):
             self.render("signup.html",
                         username_valid=username_valid,
+                        username_already_in_use=username_already_in_use,
                         password_valid=password_valid,
                         passwords_matches=passwords_matches,
                         email_valid=email_valid,
@@ -280,11 +306,12 @@ app = webapp2.WSGIApplication([
     ('/fizzbuzz', FizzBuzz),
     ('/rot13', Rot13),
     ('/signup', SignUp),
+    ('/login', Login),
+    ('/logout', Logout),
     ('/thanks', Thanks),
     ('/ascii_chan', AsciiChan),
     ('/new_blog_post', NewBlogPost),
     ('/blogs', Blogs),
     ('/blogs/(\d+)', BlogPost),
     ('/counter', VisitCounter),
-    ('/login', Login),
 ], debug=True)

@@ -7,6 +7,9 @@
   .error-msg {color: red}
 </style>
 <h2>Signup form</h2>
+{% if username_already_in_use %}
+<div class="error-msg">Username is already in use!</div>
+{% endif %}
 <form method="post">
   <table>
     <tbody>
