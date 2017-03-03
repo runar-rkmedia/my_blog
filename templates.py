@@ -50,7 +50,15 @@ def check_secure_val(h):
 
 def hash_password(password):
     return bcrypt.hashpw(password, bcrypt.gensalt())
-    pass
+
+def check_username_password(username, password):
+    thisUser = db.GqlQuery(
+        "SELECT * FROM UserEntity where username='%s'" % (username, )).get()
+    if thisUser:
+        return bcrypt.hashpw(password, thisUser.password) == thisUser.password
+    else:
+        return False
+
 
 class Handler(webapp2.RequestHandler):
 
@@ -65,6 +73,12 @@ class Handler(webapp2.RequestHandler):
 
     def set_cookie(self, name, value):
         self.response.headers.add_header('Set-Cookie', '{}={}'.format(name, value))
+
+    def perform_login(self, username):
+        new_cookie_val = make_secure_val(str(username))
+        self.set_cookie('user', new_cookie_val)
+
+        self.redirect("/thanks?username=" + username)
 
 class VisitCounter(Handler):
 
@@ -199,6 +213,25 @@ class AsciiChan(Handler):
             error = "we need both a title and some artwork!"
             self.render_this(title=title, art=art, error=error)
 
+class Login(Handler):
+
+    def get(self):
+        self.render("login.html")
+
+    def post(self):
+        username = self.request.get("username")
+        password = self.request.get("password")
+
+        valid_login = check_username_password(username, password)
+
+        if valid_login:
+            self.perform_login(username)
+        else:
+            self.render("login.html",
+                        error_invalid_login=True,
+                        username=username,
+                        )
+
 class SighUp(Handler):
 
     def get(self):
@@ -239,10 +272,7 @@ class SighUp(Handler):
                               email=email)
             user.put()
 
-            new_cookie_val = make_secure_val(str(username))
-            self.set_cookie('user', new_cookie_val)
-
-            self.redirect("/thanks?username=" + username)
+            self.perform_login(username)
 
 
 app = webapp2.WSGIApplication([
@@ -256,4 +286,5 @@ app = webapp2.WSGIApplication([
     ('/blogs', Blogs),
     ('/blogs/(\d+)', BlogPost),
     ('/counter', VisitCounter),
+    ('/login', Login),
 ], debug=True)
