@@ -63,6 +63,9 @@ class Handler(webapp2.RequestHandler):
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
 
+    def set_cookie(self, name, value):
+        self.response.headers.add_header('Set-Cookie', '{}={}'.format(name, value))
+
 class VisitCounter(Handler):
 
     def get(self):
@@ -79,7 +82,7 @@ class VisitCounter(Handler):
 
         new_cookie_val = make_secure_val(str(visits))
 
-        self.response.headers.add_header('Set-Cookie', 'visits={}'.format(new_cookie_val))
+        self.set_cookie('visits', new_cookie_val)
 
         self.write("You've been here %s times" % visits)
 
@@ -171,7 +174,7 @@ class NewBlogPost(Handler):
             self.redirect('/blogs/%s' % str(a.key().id()))
         else:
             error = "we need both a title and an article!"
-            self.render_this(title=title, article=article, error=error)q
+            self.render_this(title=title, article=article, error=error)
 
 
 class AsciiChan(Handler):
@@ -195,7 +198,6 @@ class AsciiChan(Handler):
         else:
             error = "we need both a title and some artwork!"
             self.render_this(title=title, art=art, error=error)
-
 
 class SighUp(Handler):
 
@@ -238,7 +240,7 @@ class SighUp(Handler):
             user.put()
 
             new_cookie_val = make_secure_val(str(username))
-            self.response.headers.add_header('Set-Cookie', 'user={}'.format(new_cookie_val))
+            self.set_cookie('user', new_cookie_val)
 
             self.redirect("/thanks?username=" + username)
 
