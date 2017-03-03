@@ -96,7 +96,11 @@ class Handler(webapp2.RequestHandler):
 
     def initialize(self, *a, **kw):
         webapp2.RequestHandler.initialize(self, *a, **kw)
-        self.user = self.read_secure_cookie('user')
+        username = self.read_secure_cookie('user')
+        if username:
+            self.user = UserEntity.by_name(username)
+        else:
+            self.user = False
 
 
 class VisitCounter(Handler):
@@ -144,10 +148,7 @@ class Rot13(Handler):
 class Thanks(Handler):
 
     def get(self):
-        username = self.read_secure_cookie('user')
-        if not self.user:
-            self.redirect('/signup')
-        self.render("/thanks.html", username=self.user)
+        self.render("/thanks.html", username=self.user.key().name())
 
 
 class Blogs(Handler):
@@ -178,23 +179,30 @@ class BlogPost(Handler):
 class NewBlogPost(Handler):
 
     def render_this(self, title="", article="", error=""):
-        self.render("new_blog_post.html", title=title,
-                    article=article, error=error)
+        if self.user:
+            self.render("new_blog_post.html", title=title,
+                        article=article, error=error)
+        else:
+            self.redirect("/login")
 
     def get(self):
         self.render_this()
 
     def post(self):
-        title = self.request.get("title")
-        article = self.request.get("article")
-
-        if title and article:
-            a = BlogEntity(parent=blog_key(), title=title, article=article)
-            a.put()
-            self.redirect('/blogs/%s' % str(a.key().id()))
+        if not self.user:
+            self.redirect('/login')
         else:
-            error = "we need both a title and an article!"
-            self.render_this(title=title, article=article, error=error)
+            title = self.request.get("title")
+            article = self.request.get("article")
+
+            if title and article:
+                a = BlogEntity(parent=blog_key(), title=title, article=article)
+                a.put()
+                self.redirect('/blogs/%s' % str(a.key().id()))
+            else:
+                error = "we need both a title and an article!"
+                self.render_this(title=title, article=article, error=error)
+
 
 
 class AsciiChan(Handler):
