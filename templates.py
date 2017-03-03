@@ -23,6 +23,7 @@ import rot13
 import verify_signup
 from Entities import ArtEntity, BlogEntity, UserEntity, blog_key
 from google.appengine.ext import db
+from lib.pybcrypt import bcrypt
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(
@@ -70,6 +71,13 @@ class Handler(webapp2.RequestHandler):
         self.response.headers.add_header(
             'Set-Cookie', '{}={}; {}'.format(name, value,extra))
 
+    def read_cookie(self, name):
+        return self.request.cookies.get(name)
+
+    def read_secure_cookie(self, name):
+        cookie_value = self.read_cookie('user')
+        return cookie_value and check_secure_val(cookie_value)
+
     def delete_cookie(self, name):
         self.set_cookie(name,
                         'deleted',
@@ -81,6 +89,10 @@ class Handler(webapp2.RequestHandler):
         self.set_cookie('user', new_cookie_val)
 
         self.redirect("/thanks?username=" + username)
+
+    def initialize(self, *a, **kw):
+        webapp2.RequestHandler.initialize(self, *a, **kw)
+        self.user = self.read_secure_cookie('user')
 
 
 class VisitCounter(Handler):
@@ -134,16 +146,10 @@ class Rot13(Handler):
 class Thanks(Handler):
 
     def get(self):
-        username_cookie_val = self.request.cookies.get('user')
-        username = None
-        if username_cookie_val:
-            cookie_val = check_secure_val(username_cookie_val)
-            if cookie_val:
-                username = cookie_val
-        if not username:
+        username = self.read_secure_cookie('user')
+        if not self.user:
             self.redirect('/signup')
-        # username = self.request.get("username")
-        self.render("/thanks.html", username=username)
+        self.render("/thanks.html", username=self.user)
 
 
 class Blogs(Handler):
