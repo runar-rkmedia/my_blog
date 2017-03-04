@@ -18,6 +18,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+from math import ceil
 import jinja2
 import webapp2
 import verify_signup
@@ -122,9 +123,21 @@ class Blogs(Handler):
 
     def get(self):
         """Retrieve all the latest blog-entries and render them to user."""
-        articles = BlogEntity.all().order('-created').fetch(limit=10)
+        page_to_show = self.request.get("page")
+        if page_to_show.isdigit() and int(page_to_show) > 1:
+            page_to_show = int(page_to_show)
+        else:
+            page_to_show = 1
+
+        limit = 10
+        offset = (page_to_show-1)*limit
+        totalArticles = BlogEntity.all().count(1000)
+        totalPages = int(ceil(float(totalArticles)/limit))
+        articles = BlogEntity.all().order('-created').fetch(limit=limit, offset=offset)
         self.render("blogs.html", articles=articles,
-                    parser=self.render_blog_article)
+                    parser=self.render_blog_article,
+                    pages=totalPages,
+                    currentPage=page_to_show)
 
 
 class BlogPost(Handler):

@@ -3,9 +3,23 @@
 
 {% block content %}
     <h2>Blog posts</h2>
-    {% for article in articles %}
-    {{ parser(article) | safe}}
-    <div class="blog-entry-spacer">
+    <div class="page-buttons">
+        {% if pages > 1 %}
+            {% for page in range(1, pages + 1) %}
+                {% if currentPage == page %}
+                    <span class="page-current">
+                        [ {{ page }} ]
+                    </span>
+                {% else %}
+                    <span class="page-button">
+                        <a href="/?page={{page}}">{{ page }}</a>
+                    </span>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
     </div>
+    {% for article in articles %}
+        {{ parser(article) | safe}}
+        <div class="blog-entry-spacer"></div>
     {% endfor %}
 {% endblock %}
