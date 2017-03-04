@@ -76,7 +76,7 @@ class Handler(webapp2.RequestHandler):
         self.set_cookie(name,
                         'deleted',
                         'path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
-                        ) # noqa
+                        )  # noqa
 
     def perform_login(self, username):
         """Set the user-cookie in the browser and redirect."""
@@ -90,15 +90,14 @@ class Handler(webapp2.RequestHandler):
         webapp2.RequestHandler.initialize(self, *a, **kw)
         username = self.read_secure_cookie('user')
         if username:
-            self.user = UserEntity.by_name(username) # noqa
+            self.user = UserEntity.by_name(username)  # noqa
         else:
-            self.user = False # noqa
+            self.user = False  # noqa
 
     def render_blog_article(self, article):
         """Render an html-element for a single blog-entry."""
-        self._render_text = article.article.replace('\n', '<br>') # noqa
+        self._render_text = article.article.replace('\n', '<br>')  # noqa
         return self.render_str("view_blog_entry.html", blog_entry=article)
-
 
 
 class Welcome(Handler):
@@ -121,17 +120,15 @@ class Thanks(Handler):
 class Blogs(Handler):
     """Show a list of the latest blogs."""
 
-
     def get(self):
-        """Retrieve all the latest blog-entries and render them to user.."""
-        articles = BlogEntity.all().order('-created')
+        """Retrieve all the latest blog-entries and render them to user."""
+        articles = BlogEntity.all().order('-created').fetch(limit=10)
         self.render("blogs.html", articles=articles,
                     parser=self.render_blog_article)
 
 
 class BlogPost(Handler):
     """Show a single blog-entry."""
-
 
     def get(self, blog_id):
         """Retrieve the blog-id from the url and shw it."""
@@ -176,7 +173,6 @@ class NewBlogPost(Handler):
                 self.render_this(title=title, article=article, error=error)
 
 
-
 class Login(Handler):
     """Login user."""
 
@@ -197,7 +193,7 @@ class Login(Handler):
             self.render("login.html",
                         error_invalid_login=True,
                         username=username,
-                        ) # noqa
+                        )  # noqa
 
 
 class Logout(Handler):
@@ -219,7 +215,7 @@ class SignUp(Handler):
                     password_valid=True,
                     passwords_matches=True,
                     email_valid=True,
-                    ) # noqa
+                    )  # noqa
 
     def post(self):
         """Register the user if form is filled out correctly."""
@@ -252,7 +248,7 @@ class SignUp(Handler):
                         email_valid=email_valid,
                         username=username,
                         email=email,
-                        ) # noqa
+                        )  # noqa
         else:
             UserEntity.register(username, password, email)
 
@@ -268,5 +264,5 @@ app = webapp2.WSGIApplication([
     ('/welcome', Welcome),
     ('/new_blog_post', NewBlogPost),
     ('/blogs', Blogs),
-    ('/blogs/(\d+)', BlogPost), # noqa
+    ('/blogs/(\d+)', BlogPost),  # noqa
 ], debug=True)

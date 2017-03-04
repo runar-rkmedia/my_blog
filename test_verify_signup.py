@@ -2,7 +2,16 @@
 # -*- coding: utf-8 -*-
 
 """Just a test for verifying signup_routine."""
+import sys
+sys.path.insert(1, '../google-cloud-sdk/platform/google_appengine')
+sys.path.insert(1, '../google-cloud-sdk/platform/google_appengine.ext')
+sys.path.insert(1, '../google-cloud-sdk/platform/google_appengine/lib/yaml/lib')
+
 import unittest
+from google.appengine.api import memcache
+from google.appengine.ext import ndb
+from google.appengine.ext import testbed
+
 from verify_signup import (valid_email, valid_password,
                            valid_username, verify_passwords_matches)
 
