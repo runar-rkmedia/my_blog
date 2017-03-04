@@ -7,10 +7,15 @@
   </head>
   <body>
     <h1 class="header-title" ><a href="/">Runar T. Blog</a></h1>
-    <a href="/signup">Sign Up!</a>
+    <a href="/">View blog</a>
+    {% if signed_in %}
     &ndash; <a href="/new_blog_post">Create new blog post</a>
-    &ndash; <a href="/login">Login</a>
     &ndash; <a href="/logout">Logout</a>
+    You are signed in as <b>{{ signed_in }}</b>
+    {% else %}
+    &ndash; <a href="/signup">Sign Up!</a>
+    &ndash; <a href="/login">Login</a>
+    {% endif %}
     {% block content %}
     {% endblock %}
     <footer>My Awesome footer</footer>

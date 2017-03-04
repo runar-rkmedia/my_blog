@@ -53,6 +53,8 @@ class Handler(webapp2.RequestHandler):
         return render_str(template, **params)
 
     def render(self, template, **kw):
+        username = self.read_secure_cookie('user')
+        kw['signed_in'] = username
         self.write(self.render_str(template, **kw))
 
     def set_cookie(self, name, value, extra=""):
@@ -109,6 +111,7 @@ class Handler(webapp2.RequestHandler):
                                currentPage=currentPage)
 
 
+
 class Welcome(Handler):
     """Welcome message for user."""
 
@@ -138,9 +141,9 @@ class Blogs(Handler):
             page_to_show = 1
 
         limit = 10
-        offset = (page_to_show-1)*limit
+        offset = (page_to_show - 1) * limit
         totalArticles = BlogEntity.all().count(1000)
-        totalPages = int(ceil(float(totalArticles)/limit))
+        totalPages = int(ceil(float(totalArticles) / limit))
         articles = BlogEntity.all().order('-created').fetch(limit=limit, offset=offset)
         self.render("blogs.html", articles=articles,
                     parser=self.render_blog_article,
