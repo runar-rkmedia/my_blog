@@ -19,7 +19,6 @@ dev_appserver.py .
 
 - Blog must include the following features:
   - [ ] Front page that lists blog posts.
-<<<<<<< HEAD
   - [X] A form to submit new entries.
   - [X] Blog posts have their own page.
 

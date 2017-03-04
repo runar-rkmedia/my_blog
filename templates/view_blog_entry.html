@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-    <div class="article">
-      <div class="article-title">
-        <h3 class="blog-entry-title">{{blog_entry.title}} <small class="blog-entry-created">{{blog_entry.created.strftime('%b %d, %Y')}}</small></h3>
-      </div>
-      <div class="blog-entry-body">
-        <p class="blog-entry-body-p">{{ blog_entry.article | safe }}</p><div>
+<div class="article">
+    <div class="article-title">
+        <h3 class="blog-entry-title">{{blog_entry.title}}
+            <small class="blog-entry-created">{{blog_entry.created.strftime('%b %d, %Y')}}</small>
+        </h3>
     </div>
+    <div class="blog-entry-body">
+        <p class="blog-entry-body-p">{{ blog_entry.article | safe }}</p>
+    </div>
+</div>
