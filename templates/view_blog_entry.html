@@ -1,10 +1,22 @@
 <!DOCTYPE html>
 <div class="article">
     <div class="article-title">
-        <h3 class="blog-entry-title"><a class="non-link"href="/blogs/{{ blog_entry.key().id() }}">{{blog_entry.title}}</a>
+        <h3 class="blog-entry-title">
+            <a class="non-link" href="/blogs/{{ blog_entry.key().id() }}">{{blog_entry.title}}</a>
             <small class="blog-entry-created">{{blog_entry.created.strftime('%b %d, %Y')}}</small>
+            <form method="post" class="inline">
+                <input type="hidden" name="extra_submit_param" value="extra_submit_value">
+                <button type="submit" name="upvote" value="{{ blog_entry.key().id() }}" class="vote-button">
+                    Upvote
+                </button>
+                <button type="submit" name="Downvote" value="{{ blog_entry.key().id() }}" class="vote-button">
+                    Downvote
+                </button>
+            </form>
         </h3>
-        <div class="blog-entry-created-by"> by {{ blog_entry.created_by.username }}</div>
+        <div class="blog-entry-created-by">
+            by
+            {{ blog_entry.created_by.username }}</div>
     </div>
     <div class="blog-entry-body">
         <p class="blog-entry-body-p">{{ blog_entry.article | safe }}</p>
