@@ -1,11 +1,23 @@
 """Used for dev-purposes to have some test-data quickly."""
-from Entities import BlogEntity,blog_key
+from Entities import BlogEntity,blog_key, UserEntity
+from random import randint
+
+# UserEntity.register(username='Johnny', password='pass')
+# UserEntity.register(username='Jake', password='pass')
+# UserEntity.register(username='James', password='pass')
+# UserEntity.register(username='Jimmy', password='pass')
+# UserEntity.register(username='Joe', password='pass')
+# UserEntity.register(username='Jane', password='pass')
+# UserEntity.register(username='Jueliette', password='pass')
+# UserEntity.register(username='July', password='pass')
+users = UserEntity.all()
 
 def dev_create_some_blog_posts():
     """Generator for random blog posts, for testing in development."""
     for i in range(0, 45):
         a = BlogEntity(
             parent=blog_key(),
+            created_by=users[randint(0, users.count()-1)],
             title='Some Title {}'.format(i),
             article="""
             Cernantur lorem sint e nulla, nisi si ea eram quibusdam in doctrina enim

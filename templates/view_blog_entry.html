@@ -4,6 +4,7 @@
         <h3 class="blog-entry-title">{{blog_entry.title}}
             <small class="blog-entry-created">{{blog_entry.created.strftime('%b %d, %Y')}}</small>
         </h3>
+        <div class="blog-entry-created-by"> by {{ blog_entry.created_by.username }}</div>
     </div>
     <div class="blog-entry-body">
         <p class="blog-entry-body-p">{{ blog_entry.article | safe }}</p>

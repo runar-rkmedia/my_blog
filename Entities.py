@@ -1,21 +1,8 @@
 """Enities used in myBlog."""
 
-from google.appengine.ext import db
+from google.appengine.ext import db # noqa
 from lib.pybcrypt import bcrypt  # This is slow, one should use regular bcrypt.
 
-
-class BlogEntity(db.Model):
-    """Blog-entries."""
-    title = db.StringProperty(required=True)
-    article = db.TextProperty(required=True)
-    created = db.DateTimeProperty(auto_now_add=True)
-    last_modified = db.DateTimeProperty(auto_now_add=True)
-
-
-def blog_key(name='default'):
-    """helper-function."""
-    # TODO: Could probably remove this
-    return db.Key.from_path('blogs', name)
 
 
 class UserEntity(db.Model):
@@ -55,3 +42,18 @@ class UserEntity(db.Model):
                           email=email)
         user.put()
         return user
+
+
+class BlogEntity(db.Model):
+    """Blog-entries."""
+    title = db.StringProperty(required=True)
+    article = db.TextProperty(required=True)
+    created_by = db.ReferenceProperty(UserEntity, required=True)
+    created = db.DateTimeProperty(auto_now_add=True)
+    last_modified = db.DateTimeProperty(auto_now_add=True)
+
+
+def blog_key(name='default'):
+    """helper-function."""
+    # TODO: Could probably remove this
+    return db.Key.from_path('blogs', name)
