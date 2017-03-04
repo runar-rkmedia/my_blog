@@ -35,7 +35,6 @@ jinja_env.filters['max'] = max
 jinja_env.filters['min'] = min
 
 
-
 class Handler(webapp2.RequestHandler):
     """Handler for the different landingpages."""
 
@@ -108,7 +107,6 @@ class Handler(webapp2.RequestHandler):
                                currentPage=currentPage)
 
 
-
 class Welcome(Handler):
     """Welcome message for user."""
 
@@ -158,7 +156,8 @@ class BlogPost(Handler):
             self.error(404)
             return
 
-        self.render("blog_permalink.html", article=blog_entry, parser=self.render_blog_article)
+        self.render("blog_permalink.html", article=blog_entry,
+                    parser=self.render_blog_article)
 
 
 class NewBlogPost(Handler):
@@ -184,8 +183,11 @@ class NewBlogPost(Handler):
             title = self.request.get("title")
             article = self.request.get("article")
 
-            if title and article:
-                a = BlogEntity(parent=blog_key(), title=title, article=article)
+            if title and article and self.user:
+                a = BlogEntity(parent=blog_key(),
+                               created_by=self.user,
+                               title=title,
+                               article=article)
                 a.put()
                 self.redirect('/blogs/%s' % str(a.key().id()))
             else:
