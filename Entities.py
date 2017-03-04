@@ -127,7 +127,12 @@ class VotesEntity(db.Model):
         Update a vote, or create it if it doesn't exist.
 
         Users can only vote once, so only one record per blog per user.
+        They also cannot vote on their own posts.
         """
+        print voteOn.created_by.username, voteBy.username
+        print voteOn.created_by, voteBy
+        if voteOn.created_by.key().id() == voteBy.key().id():
+            raise myExceptions.VoteOnOwnPostNotAllowed('Cannot vote on own post')
         vote_entry = VotesEntity.all().filter(
             'voteBy = ', voteBy).filter(
                 'voteOn = ', voteOn).get()

@@ -139,8 +139,12 @@ class Blogs(Handler):
 
     def post(self):
         """Voting on a post."""
-        self.vote_on_blog_post()
-        self.redirect("/thanks?redirect=/blogs")
+        try:
+            self.vote_on_blog_post()
+            self.redirect("/thanks?redirect=/blogs")
+        except myExceptions.VoteOnOwnPostNotAllowed:
+            self.render("/error.html",
+                        errorType='VoteOnOwnPostNotAllowed')
 
 
     def get(self):
@@ -259,6 +263,14 @@ class Logout(Handler):
         self.delete_cookie('user')
         self.redirect('/signup')
 
+class Error(Handler):
+    """Error page."""
+
+    def get(self):
+        """Show errorpage."""
+        self.delete_cookie('user')
+        self.redirect('/signup')
+
 
 class SignUp(Handler):
     """View for sign-up-form."""
@@ -321,5 +333,6 @@ app = webapp2.WSGIApplication([
     ('/welcome', Welcome),
     ('/new_blog_post', NewBlogPost),
     ('/blogs', Blogs),
+    ('/error', Error),
     ('/blogs/(\d+)', BlogPost),  # noqa
 ], debug=True)
