@@ -83,7 +83,7 @@ class Handler(webapp2.RequestHandler):
         new_cookie_val = make_secure_val(str(username))
         self.set_cookie('user', new_cookie_val)
 
-        self.redirect("/thanks?username=" + username)
+        self.redirect("/thanks?redirect=/welcome")
 
     def initialize(self, *a, **kw):
         """Retrieve the user-cookier on every new page-load."""
@@ -101,12 +101,21 @@ class Handler(webapp2.RequestHandler):
 
 
 
-class Thanks(Handler):
+class Welcome(Handler):
     """Welcome message for user."""
 
     def get(self):
         """Show the welcome-message with the username."""
-        self.render("/thanks.html", username=self.user.username)
+        self.render("/welcome.html", username=self.user.username)
+
+
+class Thanks(Handler):
+    """Redirection page"""
+
+    def get(self):
+        """Show the redirection-page."""
+        redirect = self.request.get("redirect")
+        self.render("/thanks.html", redirect=redirect)
 
 
 class Blogs(Handler):
@@ -256,6 +265,7 @@ app = webapp2.WSGIApplication([
     ('/login', Login),
     ('/logout', Logout),
     ('/thanks', Thanks),
+    ('/welcome', Welcome),
     ('/new_blog_post', NewBlogPost),
     ('/blogs', Blogs),
     ('/blogs/(\d+)', BlogPost), # noqa
