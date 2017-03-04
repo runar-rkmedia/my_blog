@@ -30,6 +30,8 @@ jinja_env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(template_dir),
     autoescape=True
 )
+jinja_env.filters['max'] = max
+jinja_env.filters['min'] = min
 
 
 def render_str(template, **params):
@@ -100,6 +102,12 @@ class Handler(webapp2.RequestHandler):
         self._render_text = article.article.replace('\n', '<br>')  # noqa
         return self.render_str("view_blog_entry.html", blog_entry=article)
 
+    def render_page_buttons(self, pages, currentPage):
+        """Render an html-element for a page-navigation."""
+        return self.render_str("page-buttons.html",
+                               pages=pages,
+                               currentPage=currentPage)
+
 
 class Welcome(Handler):
     """Welcome message for user."""
@@ -136,8 +144,7 @@ class Blogs(Handler):
         articles = BlogEntity.all().order('-created').fetch(limit=limit, offset=offset)
         self.render("blogs.html", articles=articles,
                     parser=self.render_blog_article,
-                    pages=totalPages,
-                    currentPage=page_to_show)
+                    pageButtons=self.render_page_buttons(totalPages, page_to_show))
 
 
 class BlogPost(Handler):
