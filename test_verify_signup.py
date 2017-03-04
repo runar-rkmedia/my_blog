@@ -86,6 +86,7 @@ class UserEntityTest(DatastoreTestCase):
         self.assertEqual(len(user.password), 60,
                          'userpassword should be hashed to 60 characters')
 
+
     def test_username_not_in_use(self):
         """Tests for checking if a username is already taken"""
         UserEntity.register(username='Jamie', password='password123').put()
@@ -93,6 +94,14 @@ class UserEntityTest(DatastoreTestCase):
                         'username_not_in_use should return true if username not in use.')
         self.assertFalse(username_not_in_use('Jamie'),
                          'username_not_in_use should return false if username in use.')
+
+    def test_UserEntity_register_same_username(self):
+        UserEntity.register(username='Jamie', password='password123')
+        UserEntity.register(username='Jamie', password='password123s')
+        UserEntity.register(username='Jimmy', password='password123s')
+        SameNameUsers = UserEntity.all().filter('username','Jamie')
+        self.assertEqual(SameNameUsers.count(),1,
+                         'UserEntity should only have unique usernames')
 
 
 

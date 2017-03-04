@@ -35,13 +35,15 @@ class UserEntity(db.Model):
     @classmethod
     def register(cls, username, password, email=None):
         """Register a useraccount in the datastores."""
-        if email == "":
-            email = None
-        password = UserEntity.hash_password(password)
-        user = UserEntity(username=username, password=password,
-                          email=email)
-        user.put()
-        return user
+        existingUsername = UserEntity.by_name(username)
+        if not existingUsername:
+            if email == "":
+                email = None
+            password = UserEntity.hash_password(password)
+            user = UserEntity(username=username, password=password,
+                              email=email)
+            user.put()
+            return user
 
 
 class BlogEntity(db.Model):
