@@ -105,6 +105,17 @@ class Handler(webapp2.RequestHandler):
                                pages=pages,
                                currentPage=currentPage)
 
+    def vote_on_blog_post(self):
+        """Voting on a post."""
+        voteType = self.request.get("voteDirection")
+        vote_blog_id = self.request.get("blog_id")
+        if vote_blog_id.isdigit():
+            vote_blog_id = int(vote_blog_id)
+            blog_entry = BlogEntity.get_by_id(vote_blog_id, parent=blog_key())
+
+            VotesEntity.vote_on_blog(voteBy=self.user, voteOn=blog_entry, voteType=voteType)
+            return True
+
 
 class Welcome(Handler):
     """Welcome message for user."""
@@ -126,6 +137,12 @@ class Thanks(Handler):
 class Blogs(Handler):
     """Show a list of the latest blogs."""
 
+    def post(self):
+        """Voting on a post."""
+        self.vote_on_blog_post()
+        self.redirect("/thanks?redirect=/blogs")
+
+
     def get(self):
         """Retrieve all the latest blog-entries and render them to user."""
         page_to_show = self.request.get("page")
@@ -139,6 +156,7 @@ class Blogs(Handler):
         totalArticles = BlogEntity.all().count(1000)
         totalPages = int(ceil(float(totalArticles) / limit))
         articles = BlogEntity.all().order('-created').fetch(limit=limit, offset=offset)
+
         self.render("blogs.html", articles=articles,
                     parser=self.render_blog_article,
                     pageButtons=self.render_page_buttons(totalPages, page_to_show))
@@ -148,35 +166,25 @@ class BlogPost(Handler):
     """Show a single blog-entry."""
 
     def post(self, blog_id):
-        """Voting on a post."""
-        voteType = self.request.get("voteDirection")
-        vote_blog_id = self.request.get("blog_id")
-        if vote_blog_id.isdigit():
-            vote_blog_id = int(vote_blog_id)
-            blog_entry = BlogEntity.get_by_id(vote_blog_id, parent=blog_key())
+        if self.vote_on_blog_post():
+            self.redirect("/thanks?redirect=/blogs/{}".format(blog_id))
+        else:
+            self.renderThis(blog_id)
 
-            VotesEntity.vote_on_blog(voteBy=self.user, voteOn=blog_entry, voteType=voteType)
-
-        self.renderThis(blog_id, voteType=voteType)
-
-    def renderThis(self, blog_id, voteType=None):
+    def renderThis(self, blog_id):
         """Retrieve the blog-id from the url and show it."""
         if blog_id.isdigit():
             blog_id = int(blog_id)
             blog_entry = BlogEntity.get_by_id(blog_id, parent=blog_key())
-            upvotes, downvotes = VotesEntity.get_votes_on_post(blog_entry)
-            if not voteType:
-                voteType = VotesEntity.get_vote_by_user_on_post(
-                    voteOn=blog_entry, voteBy=self.user)
+            voteType = VotesEntity.get_vote_by_user_on_post(
+                voteOn=blog_entry, voteBy=self.user)
         if not blog_entry:
             self.error(404)
             return
         self.render("blog_permalink.html",
                     article=blog_entry,
                     parser=self.render_blog_article,
-                    voteType=voteType,
-                    upvotes=upvotes,
-                    downvotes=downvotes)
+                    voteType=voteType)
 
     def get(self, blog_id): # noqa
         self.renderThis(blog_id)

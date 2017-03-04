@@ -4,7 +4,7 @@
         <h3 class="blog-entry-title">
             <a class="non-link" href="/blogs/{{ blog_entry.key().id() }}">{{blog_entry.title}}</a>
             <small class="blog-entry-created">{{blog_entry.created.strftime('%b %d, %Y')}}</small>
-            {{ upvotes }} - {{ downvotes }}
+            {{ blog_entry.getVotes()[0]}} - {{ blog_entry.getVotes()[1]}}
 
             <form method="post" class="inline">
                 <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">

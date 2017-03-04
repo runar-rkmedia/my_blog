@@ -82,6 +82,9 @@ class BlogEntity(db.Model):
         else:
             raise myExceptions.NotUnique('Title of blog needs to be unique')
 
+    def getVotes(self):
+        return VotesEntity.get_votes_on_post(self)
+
 
 def blog_key(name='default'):
     """helper-function."""
