@@ -1,6 +1,9 @@
 .header-title {
   margin: 3em 1em;
 }
+.non-link {
+  text-decoration: none;
+}
 footer {
   margin-top: 100px;
 }

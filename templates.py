@@ -25,6 +25,7 @@ import verify_signup
 from hash_functions import make_secure_val, check_secure_val
 from Entities import BlogEntity, UserEntity, blog_key
 import myExceptions
+import urllib
 # import test_data
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -151,8 +152,14 @@ class BlogPost(Handler):
 
     def get(self, blog_id):
         """Retrieve the blog-id from the url and shw it."""
-        blog_id = int(blog_id)
-        blog_entry = BlogEntity.get_by_id(blog_id, parent=blog_key())
+        if blog_id.isdigit():
+            blog_id = int(blog_id)
+            blog_entry = BlogEntity.get_by_id(blog_id, parent=blog_key())
+        else:
+            blog_id = urllib.unquote(blog_id)
+            print blog_id
+            blog_entry = BlogEntity.by_title('Create new blog posts')
+
         if not blog_entry:
             self.error(404)
             return
