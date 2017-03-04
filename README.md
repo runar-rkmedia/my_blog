@@ -1,4 +1,4 @@
-# Udacity Project: Multi-Usrer Blog
+# Udacity Project: Multi-User Blog
 
 This is part of an assignment in the Full-Stack-course at Udacity. The goal is to create a multi-user-blog, deployed using Google App Engine.
 
@@ -40,7 +40,7 @@ dev_appserver.py .
 
 ### 5: Add Other Features on Your Own
 - [ ] Users should only be able to edit/delete their posts. They receive an error message if they disobey this rule.
-- [ ] Users can like/unlike posts, but not their own. They receive an error message if they disobey this rule.
+- [X] Users can like/unlike posts, but not their own. They receive an error message if they disobey this rule.
 - [ ] Users can comment on posts. They can only edit/delete their own posts, and they should receive an error message if they disobey this rule.
 
 
