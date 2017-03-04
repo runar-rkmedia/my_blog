@@ -103,6 +103,10 @@ class Handler(webapp2.RequestHandler):
         else:
             self.user = False
 
+    def render_blog_article(self, article):
+        self._render_text = article.article.replace('\n', '<br>')
+        return self.render_str("view_blog_entry.html", blog_entry=article)
+
 
 class VisitCounter(Handler):
 
@@ -156,7 +160,7 @@ class Blogs(Handler):
 
     def render_this(self):
         articles = BlogEntity.all().order('-created')
-        self.render("blogs.html", articles=articles)
+        self.render("blogs.html", articles=articles, parser=self.render_blog_article)
 
     def get(self):
         self.render_this()

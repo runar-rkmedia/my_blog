@@ -14,10 +14,6 @@ class BlogEntity(db.Model):
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now_add=True)
 
-    def render(self):
-        self._render_text = self.article.replace('\n', '<br>')
-        return render_str("view_blog_entry.html", blog_entry=self)
-
 
 def blog_key(name='default'):
     return db.Key.from_path('blogs', name)
