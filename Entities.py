@@ -45,6 +45,8 @@ class UserEntity(db.Model):
                               email=email)
             user.put()
             return user
+        else:
+            raise myExceptions.NotUnique('Username is not unique')
 
 
 class BlogEntity(db.Model):

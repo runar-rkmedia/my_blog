@@ -7,7 +7,7 @@
   .error-msg {color: red}
 </style>
 <h2>Signup form</h2>
-{% if username_already_in_use %}
+{% if errro_username_already_in_use %}
 <div class="error-msg">Username is already in use!</div>
 {% endif %}
 <form method="post">
@@ -16,28 +16,28 @@
       <tr>
         <td class="label">Username</td>
         <td><input type="text" name="username" value="{{ username }}"></td>
-        {% if not username_valid %}
+        {% if error_username_invalid %}
         <td class="error-msg">Username is not valid!</td>
         {% endif %}
       </tr>
       <tr>
         <td class="label">Password</td>
         <td><input type="password" name="password"></td>
-        {% if not password_valid %}
+        {% if error_password_invalid %}
         <td class="error-msg">Password is not valid!</td>
         {% endif %}
       </tr>
       <tr>
         <td class="label">Verify Password</td>
         <td><input type="password" name="verify"></td>
-        {% if not passwords_matches %}
+        {% if error_passwords_mismatch %}
         <td class="error-msg">Passwords does not match!</td>
         {% endif %}
       </tr>
       <tr>
         <td class="label">Email (optional)</td>
         <td><input type="text" name="email" value="{{ email }}"></td>
-        {% if not email_valid %}
+        {% if error_email_invalid %}
         <td class="error-msg">Email is not valid! If you don't want to give one, just leave the field blank.</td>
         {% endif %}
       </tr>

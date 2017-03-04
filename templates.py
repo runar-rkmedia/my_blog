@@ -249,8 +249,6 @@ class SignUp(Handler):
         verify = self.request.get("verify")
 
         username_valid = verify_signup.valid_username(username)
-        username_already_in_use = not verify_signup.username_not_in_use(
-            username)
         password_valid = verify_signup.valid_password(password)
         passwords_matches = verify_signup.verify_passwords_matches(
             password, verify)
@@ -260,23 +258,27 @@ class SignUp(Handler):
             email_valid = True
         if not(
                 username_valid and
-                not username_already_in_use and
                 password_valid and
                 passwords_matches and
                 email_valid):
             self.render("signup.html",
-                        username_valid=username_valid,
-                        username_already_in_use=username_already_in_use,
-                        password_valid=password_valid,
-                        passwords_matches=passwords_matches,
-                        email_valid=email_valid,
+                        error_username_invalid=not username_valid,
+                        error_password_invalid=not password_valid,
+                        error_passwords_mismatch=not passwords_matches,
+                        error_email_invalid=not email_valid,
                         username=username,
                         email=email,
                         )  # noqa
         else:
-            UserEntity.register(username, password, email)
-
-            self.perform_login(username)
+            try:
+                UserEntity.register(username, password, email)
+                self.perform_login(username)
+            except myExceptions.NotUnique:
+                self.render("signup.html",
+                            errro_username_already_in_use=True,
+                            username=username,
+                            email=email,
+                            )  # noqa
 
 
 app = webapp2.WSGIApplication([
