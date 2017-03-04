@@ -1,3 +1,5 @@
+"""myBlog, an assignment on Udacity (Full Stack)."""
+
 # Copyright 2016 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +17,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import hmac
 import os
 import jinja2
 import webapp2
 import verify_signup
-from Entities import ArtEntity, BlogEntity, UserEntity, blog_key
-from google.appengine.ext import db
-from lib.pybcrypt import bcrypt
+from hash_functions import make_secure_val, check_secure_val
+from Entities import BlogEntity, UserEntity, blog_key
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(
@@ -32,125 +32,114 @@ jinja_env = jinja2.Environment(
 
 
 def render_str(template, **params):
+    """Renders a string(html) into a html-template."""
     t = jinja_env.get_template(template)
     return t.render(params)
 
 
-def hash_str(s):
-    # TODO: Should use bcrypt
-    secret = "fd4c2d860910b3a7b65c576d247292e8"
-    return hmac.new(secret, s).hexdigest()
-
-
-def make_secure_val(s):
-    return "%s|%s" % (s, hash_str(s))
-
-
-def check_secure_val(h):
-    val = h.split('|')[0]
-    if h == make_secure_val(val):
-        return val
-
-
-
-
-
 class Handler(webapp2.RequestHandler):
+    """Handler for the different landingpages."""
 
     def write(self, *a, **kw):
+        """Web response."""
         self.response.out.write(*a, **kw)
 
     def render_str(self, template, **params):
+        """???."""
+        # TODO: Remove/rename this. Confusing.
         return render_str(template, **params)
 
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
 
     def set_cookie(self, name, value, extra=""):
+        """Create a cookie."""
         self.response.headers.add_header(
             'Set-Cookie', '{}={}; {}'.format(name, value, extra))
 
     def set_secure_cookie(self, name, value, extra=""):
+        """Create a secure cookie in the browser."""
         value = make_secure_val(str(value))
         self.set_cookie(name, value, extra)
 
     def read_cookie(self, name):
+        """Read a cookie from the browser."""
         return self.request.cookies.get(name)
 
     def read_secure_cookie(self, name):
+        """Read a secure cookie from the browser."""
         cookie_value = self.read_cookie(name)
-        print cookie_value
         return cookie_value and check_secure_val(cookie_value)
 
     def delete_cookie(self, name):
+        """Delete a cookie from the browser."""
         self.set_cookie(name,
                         'deleted',
                         'path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
-                        )
+                        ) # noqa
 
     def perform_login(self, username):
+        """Set the user-cookie in the browser and redirect."""
         new_cookie_val = make_secure_val(str(username))
         self.set_cookie('user', new_cookie_val)
 
         self.redirect("/thanks?username=" + username)
 
     def initialize(self, *a, **kw):
+        """Retrieve the user-cookier on every new page-load."""
         webapp2.RequestHandler.initialize(self, *a, **kw)
         username = self.read_secure_cookie('user')
         if username:
-            self.user = UserEntity.by_name(username)
+            self.user = UserEntity.by_name(username) # noqa
         else:
-            self.user = False
+            self.user = False # noqa
 
     def render_blog_article(self, article):
-        self._render_text = article.article.replace('\n', '<br>')
+        """Render an html-element for a single blog-entry."""
+        self._render_text = article.article.replace('\n', '<br>') # noqa
         return self.render_str("view_blog_entry.html", blog_entry=article)
 
 
 
-
-class MainPage(Handler):
-
-    def get(self):
-        items = self.request.get_all("food")
-        self.render("shopping_list.html", items=items)
-
-
-
 class Thanks(Handler):
+    """Welcome message for user."""
 
     def get(self):
+        """Show the welcome-message with the username."""
         self.render("/thanks.html", username=self.user.username)
 
 
 class Blogs(Handler):
+    """Show a list of the latest blogs."""
 
-    def render_this(self):
-        articles = BlogEntity.all().order('-created')
-        self.render("blogs.html", articles=articles, parser=self.render_blog_article)
 
     def get(self):
-        self.render_this()
+        """Retrieve all the latest blog-entries and render them to user.."""
+        articles = BlogEntity.all().order('-created')
+        self.render("blogs.html", articles=articles,
+                    parser=self.render_blog_article)
 
 
 class BlogPost(Handler):
+    """Show a single blog-entry."""
 
-    def render_this(self, blog_entry):
-        self.render("view_blog_entry.html", blog_entry=blog_entry)
 
     def get(self, blog_id):
+        """Retrieve the blog-id from the url and shw it."""
         blog_id = int(blog_id)
         blog_entry = BlogEntity.get_by_id(blog_id, parent=blog_key())
         if not blog_entry:
             self.error(404)
             return
 
-        self.render_this(blog_entry)
+        self.render("view_blog_entry.html", blog_entry=blog_entry)
 
 
 class NewBlogPost(Handler):
+    """View for creating a new post."""
 
     def render_this(self, title="", article="", error=""):
+        """Renders the 'new blog'-form, but only if the user is logged in."""
         if self.user:
             self.render("new_blog_post.html", title=title,
                         article=article, error=error)
@@ -158,9 +147,11 @@ class NewBlogPost(Handler):
             self.redirect("/login")
 
     def get(self):
+        """Renders the 'new blog'-form, but only if the user is logged in."""
         self.render_this()
 
     def post(self):
+        """Create a blog-entry if logged in and form filled out correcly."""
         if not self.user:
             self.redirect('/login')
         else:
@@ -177,35 +168,15 @@ class NewBlogPost(Handler):
 
 
 
-class AsciiChan(Handler):
-
-    def render_this(self, title="", art="", error=""):
-        arts = db.GqlQuery("SELECT * FROM ArtEntity ORDER BY created DESC")
-        self.render("ascii_chan.html", title=title,
-                    art=art, error=error, arts=arts)
-
-    def get(self):
-        self.render_this()
-
-    def post(self):
-        title = self.request.get("title")
-        art = self.request.get("art")
-
-        if title and art:
-            a = ArtEntity(title=title, art=art)
-            a.put()
-            self.redirect('/ascii_chan')
-        else:
-            error = "we need both a title and some artwork!"
-            self.render_this(title=title, art=art, error=error)
-
-
 class Login(Handler):
+    """Login user."""
 
     def get(self):
+        """View for login-screen."""
         self.render("login.html")
 
     def post(self):
+        """Log in user(set cookie) if user and password matches."""
         username = self.request.get("username")
         password = self.request.get("password")
 
@@ -217,33 +188,40 @@ class Login(Handler):
             self.render("login.html",
                         error_invalid_login=True,
                         username=username,
-                        )
+                        ) # noqa
+
 
 class Logout(Handler):
+    """Logout user."""
 
     def get(self):
+        """Delete usercookie to logout user."""
         self.delete_cookie('user')
         self.redirect('/signup')
 
 
 class SignUp(Handler):
+    """View for sign-up-form."""
 
     def get(self):
+        """Show the sign-up-form."""
         self.render("signup.html",
                     username_valid=True,
                     password_valid=True,
                     passwords_matches=True,
                     email_valid=True,
-                    )
+                    ) # noqa
 
     def post(self):
+        """Register the user if form is filled out correctly."""
         username = self.request.get("username")
         email = self.request.get("email")
         password = self.request.get("password")
         verify = self.request.get("verify")
 
         username_valid = verify_signup.valid_username(username)
-        username_already_in_use = not verify_signup.username_not_in_use(username)
+        username_already_in_use = not verify_signup.username_not_in_use(
+            username)
         password_valid = verify_signup.valid_password(password)
         passwords_matches = verify_signup.verify_passwords_matches(
             password, verify)
@@ -252,11 +230,11 @@ class SignUp(Handler):
         if email == "":
             email_valid = True
         if not(
-            username_valid and
-            not username_already_in_use and
-            password_valid and
-            passwords_matches and
-            email_valid):
+                username_valid and
+                not username_already_in_use and
+                password_valid and
+                passwords_matches and
+                email_valid):
             self.render("signup.html",
                         username_valid=username_valid,
                         username_already_in_use=username_already_in_use,
@@ -265,7 +243,7 @@ class SignUp(Handler):
                         email_valid=email_valid,
                         username=username,
                         email=email,
-                        )
+                        ) # noqa
         else:
             UserEntity.register(username, password, email)
 
@@ -280,5 +258,5 @@ app = webapp2.WSGIApplication([
     ('/thanks', Thanks),
     ('/new_blog_post', NewBlogPost),
     ('/blogs', Blogs),
-    ('/blogs/(\d+)', BlogPost),
+    ('/blogs/(\d+)', BlogPost), # noqa
 ], debug=True)
