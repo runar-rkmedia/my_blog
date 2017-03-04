@@ -25,7 +25,6 @@ import verify_signup
 from hash_functions import make_secure_val, check_secure_val
 from Entities import BlogEntity, UserEntity, blog_key
 import myExceptions
-import urllib
 # import test_data
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -33,8 +32,6 @@ jinja_env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(template_dir),
     autoescape=True
 )
-jinja_env.filters['max'] = max
-jinja_env.filters['min'] = min
 
 
 class Handler(webapp2.RequestHandler):
