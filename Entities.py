@@ -1,9 +1,8 @@
 """Enities used in myBlog."""
 
-from google.appengine.ext import db # noqa
+from google.appengine.ext import db  # noqa
 from lib.pybcrypt import bcrypt  # This is slow, one should use regular bcrypt.
 import myExceptions
-
 
 
 class UserEntity(db.Model):
@@ -49,7 +48,6 @@ class UserEntity(db.Model):
             raise myExceptions.NotUnique('Username is not unique')
 
 
-
 class BlogEntity(db.Model):
     """Blog-entries."""
     title = db.StringProperty(required=True)
@@ -63,7 +61,6 @@ class BlogEntity(db.Model):
     #     """Retrieve a blogentry by its id."""
     #     blogEntry = db.Key.from_path('BlogEntity', blog_key())
     #     return blogEntry
-
     @classmethod
     def by_title(cls, title):
         """Retrieve a blogentry by its title."""
@@ -86,11 +83,10 @@ class BlogEntity(db.Model):
             raise myExceptions.NotUnique('Title of blog needs to be unique')
 
 
-
 def blog_key(name='default'):
     """helper-function."""
-    # TODO: Could probably remove this
     return db.Key.from_path('blogs', name)
+
 
 class VotesEntity(db.Model):
     """Votes in the blog."""
@@ -98,3 +94,46 @@ class VotesEntity(db.Model):
     voteBy = db.ReferenceProperty(UserEntity, required=True)
     voteOn = db.ReferenceProperty(BlogEntity, required=True)
     voteType = db.StringProperty(required=True, choices=('up', 'down'))
+
+    @classmethod
+    def get_votes_on_post(cls, voteOn):
+        """Return up- and downvotes for the blog_post."""
+        upvotes = VotesEntity.all().filter(
+            'voteOn = ', voteOn).filter('voteType = ', 'up').count()
+        downvotes = VotesEntity.all().filter(
+            'voteOn = ', voteOn).filter('voteType = ', 'down').count()
+        return upvotes, downvotes
+
+    @classmethod
+    def get_votes_by_user(cls, voteBy):
+        """Return all voteEntries by user."""
+        return VotesEntity.all().filter('voteBy = ', voteBy).get()
+
+    @classmethod
+    def get_vote_by_user_on_post(cls, voteBy, voteOn):
+        """Return all voteEntries by user."""
+        vote_entry = VotesEntity.all().filter(
+            'voteBy = ', voteBy).filter(
+                'voteOn = ', voteOn).get()
+        if vote_entry:
+            return vote_entry.voteType
+
+    @classmethod
+    def vote_on_blog(cls, voteOn, voteBy, voteType):
+        """
+        Update a vote, or create it if it doesn't exist.
+
+        Users can only vote once, so only one record per blog per user.
+        """
+        vote_entry = VotesEntity.all().filter(
+            'voteBy = ', voteBy).filter(
+                'voteOn = ', voteOn).get()
+        if vote_entry:
+            vote_entry.voteType = voteType
+            vote_entry.put()
+        else:
+            vote_entry = VotesEntity(
+                voteBy=voteBy,
+                voteOn=voteOn,
+                voteType=voteType).put()
+        return vote_entry

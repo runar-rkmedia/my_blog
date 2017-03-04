@@ -4,21 +4,34 @@
         <h3 class="blog-entry-title">
             <a class="non-link" href="/blogs/{{ blog_entry.key().id() }}">{{blog_entry.title}}</a>
             <small class="blog-entry-created">{{blog_entry.created.strftime('%b %d, %Y')}}</small>
+            {{ upvotes }} - {{ downvotes }}
+
             <form method="post" class="inline">
                 <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
-                <button type="submit" name="voteDirection" value="up" class="link-button">
-                    Upvote
+                <button type="submit" name="voteDirection" value="up" class="link-button
+                {% if voteType=='up' %}
+                user-voted" disabled='disabled'
+                {% else %}
+                "
+                {% endif %}
+                >Upvote
                 </button>
-                <button type="submit" name="voteDirection" value="down" class="link-button">
-                    Downvote
+                <button type="submit" name="voteDirection" value="down" class="link-button
+                {% if voteType=='down' %}
+                user-voted" disabled='disabled'
+                {% else %}
+                "
+                {% endif %}
+                >Downvote
                 </button>
             </form>
+
         </h3>
         <div class="blog-entry-created-by">
             by
             {{ blog_entry.created_by.username }}</div>
     </div>
     <div class="blog-entry-body">
-        <p class="blog-entry-body-p">{{ blog_entry.article | safe }}</p>
+        <p class="blog-entry-body-p">{{ blog_entry.article | safe }}{{voteBy}}</p>
     </div>
 </div>

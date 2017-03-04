@@ -41,7 +41,7 @@ class Handler(webapp2.RequestHandler):
         """Web response."""
         self.response.out.write(*a, **kw)
 
-    def render_str(self, template, **params): # noqa
+    def render_str(self, template, **params):  # noqa
         """Renders into a template."""
         t = jinja_env.get_template(template)
         return t.render(params)
@@ -94,10 +94,10 @@ class Handler(webapp2.RequestHandler):
         else:
             self.user = False  # noqa
 
-    def render_blog_article(self, article):
+    def render_blog_article(self, article, **kw):
         """Render an html-element for a single blog-entry."""
         self._render_text = article.article.replace('\n', '<br>')  # noqa
-        return self.render_str("view_blog_entry.html", blog_entry=article)
+        return self.render_str("view_blog_entry.html", blog_entry=article, **kw)
 
     def render_page_buttons(self, pages, currentPage):
         """Render an html-element for a page-navigation."""
@@ -149,41 +149,36 @@ class BlogPost(Handler):
 
     def post(self, blog_id):
         """Voting on a post."""
-        voteDirection = self.request.get("voteDirection")
+        voteType = self.request.get("voteDirection")
         vote_blog_id = self.request.get("blog_id")
         if vote_blog_id.isdigit():
             vote_blog_id = int(vote_blog_id)
             blog_entry = BlogEntity.get_by_id(vote_blog_id, parent=blog_key())
-            user_voted_blog_entry = VotesEntity.all().filter('voteBy = ',self.user).filter('voteOn = ', blog_entry).get()
-            if (blog_entry and
-                self.user and
-                (voteDirection == 'up' or voteDirection == 'down')):
-                if user_voted_blog_entry:
-                    user_voted_blog_entry.voteType = voteDirection
-                    user_voted_blog_entry.put()
-                else:
-                    VotesEntity(
-                        voteBy=self.user,
-                         voteOn=blog_entry,
-                          voteType=voteDirection).put()
-        self.renderThis(blog_id)
 
+            VotesEntity.vote_on_blog(voteBy=self.user, voteOn=blog_entry, voteType=voteType)
 
-    def renderThis(self, blog_id):
-        """Retrieve the blog-id from the url and shw it."""
+        self.renderThis(blog_id, voteType=voteType)
+
+    def renderThis(self, blog_id, voteType=None):
+        """Retrieve the blog-id from the url and show it."""
         if blog_id.isdigit():
             blog_id = int(blog_id)
             blog_entry = BlogEntity.get_by_id(blog_id, parent=blog_key())
-
+            upvotes, downvotes = VotesEntity.get_votes_on_post(blog_entry)
+            if not voteType:
+                voteType = VotesEntity.get_vote_by_user_on_post(
+                    voteOn=blog_entry, voteBy=self.user)
         if not blog_entry:
             self.error(404)
             return
+        self.render("blog_permalink.html",
+                    article=blog_entry,
+                    parser=self.render_blog_article,
+                    voteType=voteType,
+                    upvotes=upvotes,
+                    downvotes=downvotes)
 
-        self.render("blog_permalink.html", article=blog_entry,
-                    parser=self.render_blog_article)
-
-
-    def get(self, blog_id):
+    def get(self, blog_id): # noqa
         self.renderThis(blog_id)
 
 
@@ -218,9 +213,11 @@ class NewBlogPost(Handler):
                                                      article=article)
                     self.redirect('/blogs/%s' % str(a.key().id()))
                 except myExceptions.NotUnique:
-                    self.render_this(title=title, article=article, error_notUnique=True)
+                    self.render_this(
+                        title=title, article=article, error_notUnique=True)
             else:
-                self.render_this(title=title, article=article, error_missing_fields=True)
+                self.render_this(title=title, article=article,
+                                 error_missing_fields=True)
 
 
 class Login(Handler):

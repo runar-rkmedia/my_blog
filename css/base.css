@@ -87,14 +87,18 @@ hr {
 .vote-button {
   background: none;
   border: none;
-  /*color: blue;*/
-  /*text-decoration: underline;*/
-  /*cursor: pointer;*/
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
   font-size: 1em;
   font-family: serif;
 }
 .vote-button:focus {
   outline: none;
+}
+.user-voted {
+  /*font-size: 30px;*/
+  /*color: blue;*/
 }
 .vote-button:active {
   color:red;
