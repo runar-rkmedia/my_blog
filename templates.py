@@ -164,11 +164,12 @@ class BlogPost(Handler):
 class NewBlogPost(Handler):
     """View for creating a new post."""
 
-    def render_this(self, title="", article="", error=""):
+    def render_this(self, title="", article="", **kw):
         """Renders the 'new blog'-form, but only if the user is logged in."""
         if self.user:
+            print kw
             self.render("new_blog_post.html", title=title,
-                        article=article, error=error)
+                        article=article, **kw)
         else:
             self.redirect("/login")
 
@@ -191,10 +192,9 @@ class NewBlogPost(Handler):
                                                      article=article)
                     self.redirect('/blogs/%s' % str(a.key().id()))
                 except myExceptions.NotUnique as e:
-                    self.render_this(title=title, article=article, error=e)
+                    self.render_this(title=title, article=article, error_notUnique=True)
             else:
-                error = "we need both a title and an article!"
-                self.render_this(title=title, article=article, error=error)
+                self.render_this(title=title, article=article, error_missing_fields=True)
 
 
 class Login(Handler):

@@ -3,23 +3,26 @@
 
 {% block content %}
     <h2>Create new blog post</h2>
+    {% if error_notUnique %}
+        <div class="error">The title is not unique</div>
+    {% endif %}
+    {% if error_missing_fields %}
+        <div class="error">Need both the Title ad the Article</div>
+        {% endif %}
+        <form class="" method="post">
+            <label for="title">
+                <div class="form-label">Title</div>
+                <input class="title-input" type="text" name="title" value="{{ title }}">
+            </label>
+            <br>
+            <br>
+            <br>
+            <label for="article">
+                <div class="form-label">Article</div>
+                <textarea name="article" rows="8" cols="80">{{ article }}</textarea>
+            </label>
+            <input type="submit">
+        </form>
 
-    <form class="" method="post">
-        <label for="title">
-            <div class="form-label">Title</div>
-            <input class="title-input" type="text" name="title" value="{{ title }}">
-        </label>
-        <br>
-        <br>
-        <br>
-        <label for="article">
-          <div class="form-label">Article</div>
-          <textarea name="article" rows="8" cols="80">{{ article }}</textarea>
-        </label>
-
-        <div class="error">{{ error }}</div>
-        <input type="submit">
-    </form>
-
-    <hr>
-{% endblock %}
+        <hr>
+    {% endblock %}
