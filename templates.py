@@ -19,7 +19,6 @@ import hmac
 import os
 import jinja2
 import webapp2
-import rot13
 import verify_signup
 from Entities import ArtEntity, BlogEntity, UserEntity, blog_key
 from google.appengine.ext import db
@@ -69,7 +68,7 @@ class Handler(webapp2.RequestHandler):
 
     def set_cookie(self, name, value, extra=""):
         self.response.headers.add_header(
-            'Set-Cookie', '{}={}; {}'.format(name, value,extra))
+            'Set-Cookie', '{}={}; {}'.format(name, value, extra))
 
     def set_secure_cookie(self, name, value, extra=""):
         value = make_secure_val(str(value))
@@ -108,19 +107,6 @@ class Handler(webapp2.RequestHandler):
         return self.render_str("view_blog_entry.html", blog_entry=article)
 
 
-class VisitCounter(Handler):
-
-    def get(self):
-        self.response.headers['Content-Type'] = 'text/plain'
-        visits = 0
-        visits_cookie_val = self.read_secure_cookie('visits')
-        if visits_cookie_val and visits_cookie_val.isdigit():
-            visits = int(visits_cookie_val)
-
-        visits += 1
-        self.set_secure_cookie('visits', visits)
-
-        self.write("You've been here %s times" % visits)
 
 
 class MainPage(Handler):
@@ -129,25 +115,6 @@ class MainPage(Handler):
         items = self.request.get_all("food")
         self.render("shopping_list.html", items=items)
 
-
-class FizzBuzz(Handler):
-
-    def get(self):
-        n = self.request.get("n")
-        if n and n.isdigit():
-            n = int(n)
-        self.render("fizzbuzz.html", n=n)
-
-
-class Rot13(Handler):
-
-    def get(self):
-        self.render("rot13.html")
-
-    def post(self):
-        text = self.request.get("text")
-        text = rot13.rot_13(text)
-        self.render("rot13.html", text=text)
 
 
 class Thanks(Handler):
@@ -306,16 +273,12 @@ class SignUp(Handler):
 
 
 app = webapp2.WSGIApplication([
-    ('/', MainPage),
-    ('/fizzbuzz', FizzBuzz),
-    ('/rot13', Rot13),
+    ('/', Blogs),
     ('/signup', SignUp),
     ('/login', Login),
     ('/logout', Logout),
     ('/thanks', Thanks),
-    ('/ascii_chan', AsciiChan),
     ('/new_blog_post', NewBlogPost),
     ('/blogs', Blogs),
     ('/blogs/(\d+)', BlogPost),
-    ('/counter', VisitCounter),
 ], debug=True)
