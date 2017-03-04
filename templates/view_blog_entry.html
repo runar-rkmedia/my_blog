@@ -5,11 +5,11 @@
             <a class="non-link" href="/blogs/{{ blog_entry.key().id() }}">{{blog_entry.title}}</a>
             <small class="blog-entry-created">{{blog_entry.created.strftime('%b %d, %Y')}}</small>
             <form method="post" class="inline">
-                <input type="hidden" name="extra_submit_param" value="extra_submit_value">
-                <button type="submit" name="upvote" value="{{ blog_entry.key().id() }}" class="vote-button">
+                <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
+                <button type="submit" name="voteDirection" value="up" class="link-button">
                     Upvote
                 </button>
-                <button type="submit" name="Downvote" value="{{ blog_entry.key().id() }}" class="vote-button">
+                <button type="submit" name="voteDirection" value="down" class="link-button">
                     Downvote
                 </button>
             </form>

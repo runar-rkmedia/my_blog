@@ -49,6 +49,7 @@ class UserEntity(db.Model):
             raise myExceptions.NotUnique('Username is not unique')
 
 
+
 class BlogEntity(db.Model):
     """Blog-entries."""
     title = db.StringProperty(required=True)
@@ -56,6 +57,12 @@ class BlogEntity(db.Model):
     created_by = db.ReferenceProperty(UserEntity, required=True)
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now_add=True)
+
+    @classmethod
+    # def by_id(cls, blog_id):
+    #     """Retrieve a blogentry by its id."""
+    #     blogEntry = db.Key.from_path('BlogEntity', blog_key())
+    #     return blogEntry
 
     @classmethod
     def by_title(cls, title):
@@ -84,3 +91,10 @@ def blog_key(name='default'):
     """helper-function."""
     # TODO: Could probably remove this
     return db.Key.from_path('blogs', name)
+
+class VotesEntity(db.Model):
+    """Votes in the blog."""
+
+    voteBy = db.ReferenceProperty(UserEntity, required=True)
+    voteOn = db.ReferenceProperty(BlogEntity, required=True)
+    voteType = db.StringProperty(required=True, choices=('up', 'down'))

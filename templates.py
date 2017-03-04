@@ -23,7 +23,7 @@ import jinja2
 import webapp2
 import verify_signup
 from hash_functions import make_secure_val, check_secure_val
-from Entities import BlogEntity, UserEntity, blog_key
+from Entities import BlogEntity, UserEntity, blog_key, VotesEntity
 import myExceptions
 # import test_data
 
@@ -147,7 +147,29 @@ class Blogs(Handler):
 class BlogPost(Handler):
     """Show a single blog-entry."""
 
-    def get(self, blog_id):
+    def post(self, blog_id):
+        """Voting on a post."""
+        voteDirection = self.request.get("voteDirection")
+        vote_blog_id = self.request.get("blog_id")
+        if vote_blog_id.isdigit():
+            vote_blog_id = int(vote_blog_id)
+            blog_entry = BlogEntity.get_by_id(vote_blog_id, parent=blog_key())
+            user_voted_blog_entry = VotesEntity.all().filter('voteBy = ',self.user).filter('voteOn = ', blog_entry).get()
+            if (blog_entry and
+                self.user and
+                (voteDirection == 'up' or voteDirection == 'down')):
+                if user_voted_blog_entry:
+                    user_voted_blog_entry.voteType = voteDirection
+                    user_voted_blog_entry.put()
+                else:
+                    VotesEntity(
+                        voteBy=self.user,
+                         voteOn=blog_entry,
+                          voteType=voteDirection).put()
+        self.renderThis(blog_id)
+
+
+    def renderThis(self, blog_id):
         """Retrieve the blog-id from the url and shw it."""
         if blog_id.isdigit():
             blog_id = int(blog_id)
@@ -159,6 +181,10 @@ class BlogPost(Handler):
 
         self.render("blog_permalink.html", article=blog_entry,
                     parser=self.render_blog_article)
+
+
+    def get(self, blog_id):
+        self.renderThis(blog_id)
 
 
 class NewBlogPost(Handler):
