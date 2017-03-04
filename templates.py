@@ -41,13 +41,13 @@ class Handler(webapp2.RequestHandler):
         """Web response."""
         self.response.out.write(*a, **kw)
 
-    def render_str(self, template, **params):
-        """???."""
-        # TODO: Remove/rename this. Confusing.
+    def render_str(self, template, **params): # noqa
+        """Renders into a template."""
         t = jinja_env.get_template(template)
         return t.render(params)
 
     def render(self, template, **kw):
+        """Helper function for rendering templates."""
         username = self.read_secure_cookie('user')
         kw['signed_in'] = username
         self.write(self.render_str(template, **kw))
@@ -152,10 +152,6 @@ class BlogPost(Handler):
         if blog_id.isdigit():
             blog_id = int(blog_id)
             blog_entry = BlogEntity.get_by_id(blog_id, parent=blog_key())
-        else:
-            blog_id = urllib.unquote(blog_id)
-            print blog_id
-            blog_entry = BlogEntity.by_title('Create new blog posts')
 
         if not blog_entry:
             self.error(404)
@@ -195,7 +191,7 @@ class NewBlogPost(Handler):
                                                      title=title,
                                                      article=article)
                     self.redirect('/blogs/%s' % str(a.key().id()))
-                except myExceptions.NotUnique as e:
+                except myExceptions.NotUnique:
                     self.render_this(title=title, article=article, error_notUnique=True)
             else:
                 self.render_this(title=title, article=article, error_missing_fields=True)
