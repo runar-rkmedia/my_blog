@@ -34,11 +34,6 @@ jinja_env.filters['max'] = max
 jinja_env.filters['min'] = min
 
 
-def render_str(template, **params):
-    """Renders a string(html) into a html-template."""
-    t = jinja_env.get_template(template)
-    return t.render(params)
-
 
 class Handler(webapp2.RequestHandler):
     """Handler for the different landingpages."""
@@ -50,7 +45,8 @@ class Handler(webapp2.RequestHandler):
     def render_str(self, template, **params):
         """???."""
         # TODO: Remove/rename this. Confusing.
-        return render_str(template, **params)
+        t = jinja_env.get_template(template)
+        return t.render(params)
 
     def render(self, template, **kw):
         username = self.read_secure_cookie('user')
@@ -161,7 +157,7 @@ class BlogPost(Handler):
             self.error(404)
             return
 
-        self.render("view_blog_entry.html", blog_entry=blog_entry)
+        self.render("blog_permalink.html", article=blog_entry, parser=self.render_blog_article)
 
 
 class NewBlogPost(Handler):

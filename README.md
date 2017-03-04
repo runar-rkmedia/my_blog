@@ -18,7 +18,7 @@ dev_appserver.py .
 ### 1 Create a Basic Blog
 
 - Blog must include the following features:
-  - [ ] Front page that lists blog posts.
+  - [X] Front page that lists blog posts.
   - [X] A form to submit new entries.
   - [X] Blog posts have their own page.
 
