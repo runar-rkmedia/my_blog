@@ -5,7 +5,7 @@
     <h2>Blog posts</h2>
     {{ pageButtons | safe}}
     {% for article in articles %}
-        {{ parser(article) | safe}}
+        {{ parser(article, user=user) | safe}}
         <div class="blog-entry-spacer"></div>
     {% endfor %}
     {{ pageButtons | safe}}

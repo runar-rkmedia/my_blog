@@ -57,11 +57,6 @@ class BlogEntity(db.Model):
     last_modified = db.DateTimeProperty(auto_now_add=True)
 
     @classmethod
-    # def by_id(cls, blog_id):
-    #     """Retrieve a blogentry by its id."""
-    #     blogEntry = db.Key.from_path('BlogEntity', blog_key())
-    #     return blogEntry
-    @classmethod
     def by_title(cls, title):
         """Retrieve a blogentry by its title."""
         blogEntry = BlogEntity.all().filter('title =', title).get()
@@ -84,6 +79,9 @@ class BlogEntity(db.Model):
 
     def getVotes(self):
         return VotesEntity.get_votes_on_post(self)
+
+    def getVotesFromUser(self, user):
+        return VotesEntity.get_vote_by_user_on_post(voteOn=self, voteBy=user)
 
 
 def blog_key(name='default'):

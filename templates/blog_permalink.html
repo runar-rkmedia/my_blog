@@ -2,5 +2,5 @@
 {% extends "base.html" %}
 
 {% block content %}
-        {{ parser(article, voteType=voteType) | safe}}
+        {{ parser(article, user=user) | safe}}
 {% endblock %}

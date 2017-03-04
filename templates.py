@@ -50,6 +50,7 @@ class Handler(webapp2.RequestHandler):
         """Helper function for rendering templates."""
         username = self.read_secure_cookie('user')
         kw['signed_in'] = username
+        kw['user'] = UserEntity.by_name(username)
         self.write(self.render_str(template, **kw))
 
     def set_cookie(self, name, value, extra=""):
@@ -180,15 +181,12 @@ class BlogPost(Handler):
         if blog_id.isdigit():
             blog_id = int(blog_id)
             blog_entry = BlogEntity.get_by_id(blog_id, parent=blog_key())
-            voteType = VotesEntity.get_vote_by_user_on_post(
-                voteOn=blog_entry, voteBy=self.user)
         if not blog_entry:
             self.error(404)
             return
         self.render("blog_permalink.html",
                     article=blog_entry,
-                    parser=self.render_blog_article,
-                    voteType=voteType)
+                    parser=self.render_blog_article)
 
     def get(self, blog_id): # noqa
         self.renderThis(blog_id)
