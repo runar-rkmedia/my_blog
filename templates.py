@@ -24,6 +24,7 @@ import webapp2
 import verify_signup
 from hash_functions import make_secure_val, check_secure_val
 from Entities import BlogEntity, UserEntity, blog_key
+import myExceptions
 # import test_data
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -180,16 +181,17 @@ class NewBlogPost(Handler):
         if not self.user:
             self.redirect('/login')
         else:
-            title = self.request.get("title")
+            title = self.request.get("title").strip()
             article = self.request.get("article")
-
             if title and article and self.user:
-                a = BlogEntity(parent=blog_key(),
-                               created_by=self.user,
-                               title=title,
-                               article=article)
-                a.put()
-                self.redirect('/blogs/%s' % str(a.key().id()))
+                try:
+                    a = BlogEntity.create_blog_entry(parent=blog_key(),
+                                                     created_by=self.user,
+                                                     title=title,
+                                                     article=article)
+                    self.redirect('/blogs/%s' % str(a.key().id()))
+                except myExceptions.NotUnique as e:
+                    self.render_this(title=title, article=article, error=e)
             else:
                 error = "we need both a title and an article!"
                 self.render_this(title=title, article=article, error=error)

@@ -2,6 +2,7 @@
 
 from google.appengine.ext import db # noqa
 from lib.pybcrypt import bcrypt  # This is slow, one should use regular bcrypt.
+import myExceptions
 
 
 
@@ -53,6 +54,28 @@ class BlogEntity(db.Model):
     created_by = db.ReferenceProperty(UserEntity, required=True)
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now_add=True)
+
+    @classmethod
+    def by_title(cls, title):
+        """Retrieve a blogentry by its title."""
+        blogEntry = BlogEntity.all().filter('title =', title).get()
+        return blogEntry
+
+    @classmethod
+    def create_blog_entry(cls, parent, title, article, created_by):
+        """Create a blog entry, verify data first."""
+        exisistingTitle = BlogEntity.by_title(title)
+        print created_by
+        if not exisistingTitle:
+            blogEntry = BlogEntity(parent=parent,
+                                   title=title,
+                                   article=article,
+                                   created_by=created_by)
+            blogEntry.put()
+            return blogEntry
+        else:
+            raise myExceptions.NotUnique('Title of blog needs to be unique')
+
 
 
 def blog_key(name='default'):
