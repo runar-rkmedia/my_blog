@@ -1,12 +1,11 @@
 """hashing-functions. Part of myBlog."""
 
-import hmac
+from lib.pybcrypt import bcrypt  # This is slow, one should use regular bcrypt.
 
 
 def hash_str(s):
     """Hash a string, for security."""
-    secret = "fd4c2d860910b3a7b65c576d247292e8"  # Don't store this, use bcrypt
-    return hmac.new(secret, s).hexdigest()
+    return bcrypt.hashpw(s, bcrypt.gensalt())
 
 
 def make_secure_val(s):
@@ -16,6 +15,9 @@ def make_secure_val(s):
 
 def check_secure_val(h):
     """Check a secure string with hash."""
-    val = h.split('|')[0]
-    if h == make_secure_val(val):
-        return val
+    val, hashed = h.split('|')
+    try:
+        if bcrypt.hashpw(val, hashed) == hashed:
+            return val
+    except ValueError:
+        return None
