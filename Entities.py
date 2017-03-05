@@ -78,9 +78,15 @@ class BlogEntity(db.Model):
             raise myExceptions.NotUnique('Title of blog needs to be unique')
 
     def getVotes(self):
+        """Return all votes on this post."""
         return VotesEntity.get_votes_on_post(self)
 
+    def vote(self, voteBy, voteType):
+        """Vote on this blog."""
+        return VotesEntity.vote_on_blog(voteOn=self, voteBy=voteBy, voteType=voteType)
+
     def getVotesFromUser(self, user):
+        """Return voteType('up', or 'down') on this post by this user."""
         return VotesEntity.get_vote_by_user_on_post(voteOn=self, voteBy=user)
 
     def output_html_article(self):

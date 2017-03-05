@@ -23,7 +23,7 @@ import jinja2
 import webapp2
 import verify_signup
 from hash_functions import make_secure_val, check_secure_val
-from Entities import BlogEntity, UserEntity, blog_key, VotesEntity
+from Entities import BlogEntity, UserEntity, blog_key
 import myExceptions
 # import test_data
 
@@ -114,7 +114,7 @@ class Handler(webapp2.RequestHandler):
             vote_blog_id = int(vote_blog_id)
             blog_entry = BlogEntity.get_by_id(vote_blog_id, parent=blog_key())
 
-            VotesEntity.vote_on_blog(voteBy=self.user, voteOn=blog_entry, voteType=voteType)
+            blog_entry.vote(voteBy=self.user, voteType=voteType)
             return True
 
 
