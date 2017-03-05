@@ -83,6 +83,10 @@ class BlogEntity(db.Model):
     def getVotesFromUser(self, user):
         return VotesEntity.get_vote_by_user_on_post(voteOn=self, voteBy=user)
 
+    def output_html_article(self):
+        """Return an html-friendly version of the article."""
+        return self.article.replace('\n', '<br>')  # noqa
+
 
 def blog_key(name='default'):
     """helper-function."""

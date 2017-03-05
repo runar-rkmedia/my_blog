@@ -33,6 +33,6 @@
             {{ blog_entry.created_by.username }} </div>
     </div>
     <div class="blog-entry-body">
-        <p class="blog-entry-body-p">{{ blog_entry.article | safe }}</p>
+        <p class="blog-entry-body-p">{{ blog_entry.output_html_article() | safe }}</p>
     </div>
 </div>
