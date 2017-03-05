@@ -1,5 +1,5 @@
 .header-title {
-  margin: 3em 1em;
+  margin: 2em 0em;
 }
 .non-link {
   text-decoration: none;
@@ -102,4 +102,27 @@ hr {
 }
 .vote-button:active {
   color:red;
+}
+
+footer {
+  margin: 0 auto;
+  max-width: 100%;
+}
+.social {
+  margin: 0 auto;
+  max-width: 50%;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  /*flex-direction: column;*/
+}
+.social-entry {
+  max-width: 50px;
+  color: black;
+}
+.social-entry i{
+  font-size: 24px;
+  color: #001233;
+  text-shadow: 3px 3px 3px #aaa;
+  add
 }
