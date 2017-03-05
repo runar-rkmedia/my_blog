@@ -66,7 +66,6 @@ class BlogEntity(db.Model):
     def create_blog_entry(cls, parent, title, article, created_by):
         """Create a blog entry, verify data first."""
         exisistingTitle = BlogEntity.by_title(title)
-        print created_by
         if not exisistingTitle:
             blogEntry = BlogEntity(parent=parent,
                                    title=title,
@@ -137,8 +136,6 @@ class VotesEntity(db.Model):
         Users can only vote once, so only one record per blog per user.
         They also cannot vote on their own posts.
         """
-        print voteOn.created_by.username, voteBy.username
-        print voteOn.created_by, voteBy
         if voteOn.created_by.key().id() == voteBy.key().id():
             raise myExceptions.VoteOnOwnPostNotAllowed('Cannot vote on own post')
         vote_entry = VotesEntity.all().filter(

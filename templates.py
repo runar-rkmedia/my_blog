@@ -198,7 +198,6 @@ class NewBlogPost(Handler):
     def render_this(self, title="", article="", **kw):
         """Renders the 'new blog'-form, but only if the user is logged in."""
         if self.user:
-            print kw
             self.render("new_blog_post.html", title=title,
                         article=article, **kw)
         else:
