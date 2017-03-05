@@ -145,8 +145,11 @@ class VotesEntity(db.Model):
             'voteBy = ', voteBy).filter(
                 'voteOn = ', voteOn).get()
         if vote_entry:
-            vote_entry.voteType = voteType
-            vote_entry.put()
+            if vote_entry.voteType == voteType:
+                vote_entry.delete()
+            else:
+                vote_entry.voteType = voteType
+                vote_entry.put()
         else:
             vote_entry = VotesEntity(
                 voteBy=voteBy,
