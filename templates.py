@@ -192,8 +192,8 @@ class BlogPost(Handler):
         self.renderThis(blog_id)
 
 
-class NewBlogPost(Handler):
-    """View for creating a new post."""
+class CreateOrEditBlogPost(Handler):
+    """View for creating or editing a  post."""
 
     def render_this(self, title="", article="", **kw):
         """Renders the 'new blog'-form, but only if the user is logged in."""
@@ -205,6 +205,11 @@ class NewBlogPost(Handler):
 
     def get(self):
         """Renders the 'new blog'-form, but only if the user is logged in."""
+        blog_id = self.request.get("blog_id")
+        if blog_id.isdigit():
+            blog_id = int(blog_id)
+            blog_entry = BlogEntity.get_by_id(blog_id, parent=blog_key())
+            print blog_id, blog_entry
         self.render_this()
 
     def post(self):
@@ -328,8 +333,9 @@ app = webapp2.WSGIApplication([
     ('/logout', Logout),
     ('/thanks', Thanks),
     ('/welcome', Welcome),
-    ('/new_blog_post', NewBlogPost),
+    ('/new_blog_post', CreateOrEditBlogPost),
     ('/blogs', Blogs),
     ('/error', Error),
     ('/blogs/(\d+)', BlogPost),  # noqa
+    ('/edit_blog_post', CreateOrEditBlogPost),  # noqa
 ], debug=True)
