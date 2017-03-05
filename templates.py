@@ -25,7 +25,6 @@ import verify_signup
 from hash_functions import make_secure_val, check_secure_val
 from Entities import BlogEntity, UserEntity, blog_key
 import myExceptions
-# import test_data
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(
@@ -171,6 +170,7 @@ class BlogPost(Handler):
     """Show a single blog-entry."""
 
     def post(self, blog_id):
+        """Vote, redirect to thanks-page if valid vote."""
         if self.vote_on_blog_post():
             self.redirect("/thanks?redirect=/blogs/{}".format(blog_id))
         else:

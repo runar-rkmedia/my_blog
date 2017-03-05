@@ -5,11 +5,14 @@
             <a class="non-link" href="/blogs/{{ blog_entry.key().id() }}">{{blog_entry.title}}</a>
         </h3>
         <div class="three columns blog-entry-extra-info">
-            <div class="blog-entry-created-by">
-                by
-                {{ blog_entry.created_by.username }}
+            <div class="created_by_and_when">
+                <div class="blog-entry-created-by">
+                    by
+                    {{ blog_entry.created_by.username }}
+                </div>
+                <div class="blog-entry-created">{{blog_entry.created.strftime('%b %d, %Y')}}</div>
             </div>
-            <div class="blog-entry-created">{{blog_entry.created.strftime('%b %d, %Y')}}</div>
+
             <div class="blog-votes">
                 <form method="post" class="inline">
                     <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">

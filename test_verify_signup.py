@@ -4,6 +4,7 @@
 """Just a test for verifying signup_routine."""
 import sys
 import unittest
+import myExceptions
 # Make sure these folders point to the correct place
 sys.path.insert(1, '../google-cloud-sdk/platform/google_appengine')
 sys.path.insert(1, '../google-cloud-sdk/platform/google_appengine.ext')
@@ -18,7 +19,6 @@ from verify_signup import (valid_email,  # noqa
                            verify_passwords_matches
                           )
 from Entities import UserEntity  # noqa
-import myExceptions
 
 
 class TestModel(ndb.Model):
@@ -94,7 +94,10 @@ class UserEntityTest(DatastoreTestCase):
 
         UserEntity.register(username='Jimmy', password='password123s')
         UserEntity.register(username='Jamie', password='password123')
-        self.assertRaises(myExceptions.NotUnique, UserEntity.register, username='Jamie', password='password123s')
+        self.assertRaises(myExceptions.NotUnique,
+                          UserEntity.register,
+                          username='Jamie',
+                          password='password123')
 
 
 
@@ -114,7 +117,7 @@ class UsernameTest(unittest.TestCase):
         """valid_username should return False with input of more than 20 characters."""
         self.assertFalse(valid_username('abcdefghijklmnopqrstu'))
 
-    def test_valid_non_valid_characters(self):
+    def test_valid_username_non_valid_characters(self):
         """valid_username should return false with invalid characters"""
         self.assertFalse(valid_username('jonZå'))
         self.assertFalse(valid_username('sdf&'))
