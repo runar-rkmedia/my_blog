@@ -5,41 +5,60 @@
             <a class="non-link" href="/blogs/{{ blog_entry.key().id() }}">{{blog_entry.title}}</a>
         </h3>
         <div class="three columns blog-entry-extra-info">
-          <div class="blog-entry-created-by">
-              by
-              {{ blog_entry.created_by.username }}
-          </div>
+            <div class="blog-entry-created-by">
+                by
+                {{ blog_entry.created_by.username }}
+            </div>
             <div class="blog-entry-created">{{blog_entry.created.strftime('%b %d, %Y')}}</div>
             <div class="blog-votes">
-                {% if user and user.key().id() != blog_entry.created_by.key().id() %}
-                    <form method="post" class="inline">
-                        <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
-                        <button type="submit" name="voteDirection" value="up" class="fabutton link-button
+                <form method="post" class="inline">
+                    <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
+                    <button
+                        type="submit"
+                        name="voteDirection"
+                        value="up"
+                        class="fabutton vote-button
                 {% if user and blog_entry.getVotesFromUser(user)=='up' %}
                 user-upvoted
-                {% endif %}">
-                            <i class="fa fa-thumbs-up" aria-hidden="true"></i>
-                        </button>
-                        {{ blog_entry.getVotes()[0]}}
-                        <button type="submit" name="voteDirection" value="down" class="fabutton link-button
+                {% endif %}
+                {% if not user or (user and user.key().id() == blog_entry.created_by.key().id()) %}
+                  disabled"
+                        disabled="disabled"
+                        {% else %}
+                        "
+                {% endif %}>
+                        <i class="
+                        fa
+                        fa-thumbs-up" aria-hidden="
+                        true"></i>
+                </button>
+                <span class="voteCount">{{ blog_entry.getVotes()[0]}}</span>
+                <button
+                    type="submit"
+                    name="voteDirection"
+                    value="down"
+                    class="fabutton vote-button
                 {% if user and blog_entry.getVotesFromUser(user)=='down' %}
                 user-downvoted
-                {% endif %}">
-                            <i class="fa fa-thumbs-down" aria-hidden="true"></i>
-                        </button>
-                        {{ blog_entry.getVotes()[1]}}
-                    </form>
-                {% else %}
-                    <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
-                    <i class="fa fa-thumbs-up" aria-hidden="true"></i>
-                    {{ blog_entry.getVotes()[0]}}
-                    <i class="fa fa-thumbs-down" aria-hidden="true"></i>
-                    {{ blog_entry.getVotes()[1]}}
                 {% endif %}
-            </div>
-        </div>
+                {% if not user or (user and user.key().id() == blog_entry.created_by.key().id()) %}
+                  disabled"
+                    disabled="disabled"
+                    {% else %}
+                    "
+                {% endif %}>
+                        <i class="
+                    fa
+                    fa-thumbs-down" aria-hidden="
+                    true"></i>
+            </button>
+            <span class="voteCount">{{ blog_entry.getVotes()[1]}}</span>
+            <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
+        </form>
+    </div>
+</div>
 </div>
 <div class="blog-entry-body">
-    <p class="blog-entry-body-p">{{ blog_entry.output_html_article() | safe }}</p>
+<p class="blog-entry-body-p">{{ blog_entry.output_html_article() | safe }}</p>
 </div>
 </div>

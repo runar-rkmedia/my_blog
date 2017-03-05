@@ -2,27 +2,26 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>Create new blog post</h2>
-    {% if error_notUnique %}
-        <div class="error">The title is not unique</div>
-    {% endif %}
-    {% if error_missing_fields %}
-        <div class="error">Need both the Title ad the Article</div>
+    <div class="row new-post">
+        <h2>Create new blog post</h2>
+        {% if error_notUnique %}
+            <div class="row error">The title is not unique</div>
         {% endif %}
-        <form class="" method="post">
-            <label for="title">
-                <div class="form-label">Title</div>
-                <input class="title-input" type="text" name="title" value="{{ title }}">
-            </label>
-            <br>
-            <br>
-            <br>
-            <label for="article">
-                <div class="form-label">Article</div>
-                <textarea name="article" rows="8" cols="80">{{ article }}</textarea>
-            </label>
-            <input type="submit">
+        {% if error_missing_fields %}
+            <div class=" row error">Need both the Title ad the Article</div>
+        {% endif %}
+        <form method="post">
+            <div class="row columns form-row">
+                <label for="title-input" class="form-label">Title</label>
+                <input class="u-full-width" id="title-input" type="text" placeholder="Enter a title here" name="title" value="{{ title }}">
+            </div>
+            <div class="row form-row">
+                <label for="article-input" class="form-label">Article</label>
+                    <textarea name="article" class="u-full-width" id="article-input" placeholder="Enter your article here. HTML-tags are allowed.">{{ article }}</textarea>
+            </div>
+            <input class="button-primary" type="submit" value="submit">
         </form>
 
         <hr>
-    {% endblock %}
+    </div>
+{% endblock %}

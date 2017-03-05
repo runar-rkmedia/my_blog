@@ -33,7 +33,7 @@ footer {
     max-width: 768px;
     margin: 0 auto;
     color: #cbc6cf;
-    padding: 10px;
+    padding: 10px 30px;
 }
 
 .content h2 {
@@ -44,6 +44,7 @@ h1 {
     /*margin: 0 auto;*/
     text-align: center;
 }
+
 
 .header-title {
     font-family: 'Indie Flower', cursive;
@@ -75,37 +76,38 @@ h1 {
 label {
     display: block;
     font-size: 20px;
-}
-
-.title-input {
-    width: 400px;
-    font-size: 17px;
-    font-family: monospace;
+    text-transform: lowercase;
+    font-variant: small-caps;
 }
 
 input[type=submit] {
     font-size: 24px;
 }
-
-textarea {
+#article-input {
     height: 600px;
-    font-size: 14px;
-    font-family: monospace;
 }
-
+.form-row{
+  margin-bottom: 10px;
+}
 hr {
     margin: 20px auto;
 }
 
-.blog-votes {
+.blog-votes, .vote-button {
     font-size: 2.4rem;
 }
-
+.disabled{
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 .fabutton {
     background: none;
     padding: 0;
     border: none;
     color: white;
+}
+.fabutton:hover {
+  color: red
 }
 
 @media (max-width: 549px) {
@@ -121,28 +123,14 @@ hr {
 }
 
 .user-upvoted {
-    /*font-size: 30px;*/
+    font-size: 30px;
     color: #15bf59;
 }
 
 .user-downvoted {
-    /*font-size: 30px;*/
+    font-size: 30px;
     color: #f95e5e;
 }
-
-
-/*.blog-entry-title {
-    position: relative;
-    border-bottom: 3px solid #666;
-}*/
-
-
-/*.blog-entry-created {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    color: #999;
-}*/
 
 .blog-entry-spacer {
     width: 50%;
@@ -190,4 +178,7 @@ footer {
 .social-entry i {
     font-size: 28px;
     color: #c9c4cf;
+}
+.thanks {
+  text-align: center;
 }

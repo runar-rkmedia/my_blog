@@ -2,25 +2,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Login form</h2>
-{% if error_invalid_login %}
-<div class="error-msg">Sorry, the username and password did not match</div>
-{% endif %}
-<form method="post">
-  <table>
-    <tbody>
-      <tr>
-        <td class="label">Username</td>
-        <td><input type="text" name="username" value="{{ username }}"></td>
-      </tr>
-      <tr>
-        <td class="label">Password</td>
-        <td><input type="password" name="password"></td>
-      </tr>
-      <tr>
-      </tr>
-    </tbody>
-  </table>
-<input type="submit", value="Login">
-</form>
+    <div class="row login">
+        <h2>Login form</h2>
+        {% if error_invalid_login %}
+            <div class="error row">Sorry, the username and password did not match</div>
+        {% endif %}
+        <form method="post">
+            <div class="row form-row">
+                <label for="input-username" class="label">Username</label>
+                <input type="text" id="input-username" name="username" placeholder="Username" value="{{ username }}">
+            </div>
+
+            <div class="row form-row">
+                <label for="input-password" class="label">Password</label>
+                <input type="password" id="input-password" name="password" placeholder="Password">
+            </div>
+            <input class="button-primary" type="submit" , value="Login">
+        </form>
+    </div>
 {% endblock %}

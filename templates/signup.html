@@ -2,47 +2,53 @@
 {% extends "base.html" %}
 
 {% block content %}
-<style type="text/css">
-  .label {text-align: right}
-  .error-msg {color: red}
-</style>
-<h2>Signup form</h2>
-{% if errro_username_already_in_use %}
-<div class="error-msg">Username is already in use!</div>
-{% endif %}
-<form method="post">
-  <table>
-    <tbody>
-      <tr>
-        <td class="label">Username</td>
-        <td><input type="text" name="username" value="{{ username }}"></td>
-        {% if error_username_invalid %}
-        <td class="error-msg">Username is not valid!</td>
+    <div class="row signup-form">
+        <h2>Signup form</h2>
+        {% if errro_username_already_in_use %}
+            <div class="error">Username is already in use!</div>
         {% endif %}
-      </tr>
-      <tr>
-        <td class="label">Password</td>
-        <td><input type="password" name="password"></td>
-        {% if error_password_invalid %}
-        <td class="error-msg">Password is not valid!</td>
-        {% endif %}
-      </tr>
-      <tr>
-        <td class="label">Verify Password</td>
-        <td><input type="password" name="verify"></td>
-        {% if error_passwords_mismatch %}
-        <td class="error-msg">Passwords does not match!</td>
-        {% endif %}
-      </tr>
-      <tr>
-        <td class="label">Email (optional)</td>
-        <td><input type="text" name="email" value="{{ email }}"></td>
-        {% if error_email_invalid %}
-        <td class="error-msg">Email is not valid! If you don't want to give one, just leave the field blank.</td>
-        {% endif %}
-      </tr>
-    </tbody>
-  </table>
-<input type="submit">
-</form>
+        <form method="post">
+
+            <div class="row">
+                <div class="six columns form-row">
+                    <label for="username-input">Username</label>
+                    <input class="u-full-width" type="text" name="username" placeholder="Username" value="{{ username }}">
+                    {% if error_username_invalid %}
+                        <div class="error full-width">Username is not valid!</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="six columns form-row">
+                    <label for="input-password">Password</label>
+                    <input class="u-full-width" id="input-password" type="password" name="password" placeholder="Password">
+                    {% if error_password_invalid %}
+                        <div class="error">Password is not valid!</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="six columns form-row">
+                    <label for="input-verify">Verify Password</label>
+                    <input class="u-full-width" id="input-verify" type="password" name="verify" placeholder="Verify password">
+                    {% if error_passwords_mismatch %}
+                        <div class="error">Passwords does not match!</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="six columns form-row">
+                    <label for="input-email">Email (optional)</label>
+                    <input class="u-full-width" type="text" name="email" id="input-email" value="{{ email }}" placeholder="Email (optional)">
+                    {% if error_email_invalid %}
+                        <div class="error">Email is not valid! If you don't want to give one, just leave the field blank.</div>
+                    {% endif %}
+                </div>
+            </div>
+            <input class="button-primary" type="submit">
+        </form>
+    </div>
 {% endblock %}
