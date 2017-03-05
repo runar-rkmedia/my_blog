@@ -2,9 +2,7 @@
 <div class="page-buttons">
     {% if pages > 1 %}
     {% if currentPage != 1 %}
-    <span class="page-button">
-        <a href="/?page={{ currentPage -1 }}">Prev</a>
-    </span>
+        <a class="page-button" href="/?page={{ currentPage -1 }}">Prev</a>
     {% endif %}
         {% for page in range(1, pages + 1) %}
 
@@ -13,15 +11,11 @@
                     [ {{ page }} ]
                 </span>
             {% else %}
-                <span class="page-button">
-                    <a href="/?page={{page}}">{{ page }}</a>
-                </span>
+                    <a class="page-button" href="/?page={{page}}">{{ page }}</a>
             {% endif %}
         {% endfor %}
         {% if currentPage != pages %}
-        <span class="page-button">
-            <a href="/?page={{ currentPage +1 }}">Next</a>
-        </span>
+            <a class="page-button" href="/?page={{ currentPage +1 }}">Next</a>
         {% endif %}
     {% endif %}
 </div>

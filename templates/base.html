@@ -2,33 +2,34 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <link rel="stylesheet" href="/css/base.css">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="https://use.fontawesome.com/8bca36af1d.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Indie+Flower|Raleway" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css"/>
+        <link rel="stylesheet" href="/css/base.css">
         <title>Awesome yo</title>
     </head>
     <body>
-        <div class="header">
-            <h1>
-                <a class="non-link header-title" href="/">Runar T. Blog</a>
-            </h1>
-            <div class="navbar">
-                <a href="/">View blog</a>
+        <div class="header row">
+            <a class="non-link header-title" href="/">Runar T. Blog</a>
+            <nav class="navbar row u-pull-right">
                 {% if signed_in %}
-                    &ndash;
-                    <a href="/new_blog_post">Create new blog post</a>
-                    &ndash;
-                    <a href="/logout">Logout</a>
-                    You are signed in as
-                    <b>{{ signed_in }}</b>
+                    <a class="nav-link" href="/new_blog_post">Create new blog post</a>
+                    <span class="nav-signed-in">
+                      <strong>{{ signed_in }}</strong>
+                      <a class="nav-link" href="/logout">Logout</a>
+                    </span>
                 {% else %}
-                    &ndash;
-                    <a href="/signup">Sign Up!</a>
-                    &ndash;
-                    <a href="/login">Login</a>
+                    <a class="nav-link" href="/signup">Sign Up!</a>
+                    <a class="nav-link" href="/login">Login</a>
                 {% endif %}
-            </div>
+            </nav>
         </div>
-        <div class="content">{% block content %}{% endblock %}</div>
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
         <footer>
             <div class="social">
                 <div class="social-entry">
@@ -51,7 +52,7 @@
                         <i class="fa fa-google-plus-official" aria-hidden="true"></i>
                     </a>
                 </div>
-              </div>
-            </footer>
-        </body>
-    </html>
+            </div>
+        </footer>
+    </body>
+</html>

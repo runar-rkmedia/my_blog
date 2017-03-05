@@ -1,38 +1,45 @@
 <!DOCTYPE html>
-<div class="article">
-    <div class="article-title">
-        <h3 class="blog-entry-title">
+<div class="row article">
+    <div class="row article-title">
+        <h3 class="blog-entry-header nine columns">
             <a class="non-link" href="/blogs/{{ blog_entry.key().id() }}">{{blog_entry.title}}</a>
-            <small class="blog-entry-created">{{blog_entry.created.strftime('%b %d, %Y')}}</small>
-            {{ blog_entry.getVotes()[0]}} - {{ blog_entry.getVotes()[1]}}
-            {% if user and user.key().id() != blog_entry.created_by.key().id() %}
-            <form method="post" class="inline">
-                <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
-                <button type="submit" name="voteDirection" value="up" class="link-button
-                {% if user and blog_entry.getVotesFromUser(user)=='up' %}
-                user-voted" disabled='disabled'
-                {% else %}
-                "
-                {% endif %}
-                >Upvote
-                </button>
-                <button type="submit" name="voteDirection" value="down" class="link-button
-                {% if user and blog_entry.getVotesFromUser(user)=='down' %}
-                user-voted" disabled='disabled'
-                {% else %}
-                "
-                {% endif %}
-                >Downvote
-                </button>
-            </form>
-            {% endif %}
-
         </h3>
-        <div class="blog-entry-created-by">
-            by
-            {{ blog_entry.created_by.username }} </div>
-    </div>
-    <div class="blog-entry-body">
-        <p class="blog-entry-body-p">{{ blog_entry.output_html_article() | safe }}</p>
-    </div>
+        <div class="three columns blog-entry-extra-info">
+          <div class="blog-entry-created-by">
+              by
+              {{ blog_entry.created_by.username }}
+          </div>
+            <div class="blog-entry-created">{{blog_entry.created.strftime('%b %d, %Y')}}</div>
+            <div class="blog-votes">
+                {% if user and user.key().id() != blog_entry.created_by.key().id() %}
+                    <form method="post" class="inline">
+                        <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
+                        <button type="submit" name="voteDirection" value="up" class="fabutton link-button
+                {% if user and blog_entry.getVotesFromUser(user)=='up' %}
+                user-upvoted
+                {% endif %}">
+                            <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                        </button>
+                        {{ blog_entry.getVotes()[0]}}
+                        <button type="submit" name="voteDirection" value="down" class="fabutton link-button
+                {% if user and blog_entry.getVotesFromUser(user)=='down' %}
+                user-downvoted
+                {% endif %}">
+                            <i class="fa fa-thumbs-down" aria-hidden="true"></i>
+                        </button>
+                        {{ blog_entry.getVotes()[1]}}
+                    </form>
+                {% else %}
+                    <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
+                    <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                    {{ blog_entry.getVotes()[0]}}
+                    <i class="fa fa-thumbs-down" aria-hidden="true"></i>
+                    {{ blog_entry.getVotes()[1]}}
+                {% endif %}
+            </div>
+        </div>
+</div>
+<div class="blog-entry-body">
+    <p class="blog-entry-body-p">{{ blog_entry.output_html_article() | safe }}</p>
+</div>
 </div>
