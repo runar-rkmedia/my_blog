@@ -2,6 +2,8 @@
 
 This is part of an assignment in the Full-Stack-course at Udacity. The goal is to create a multi-user-blog, deployed using Google App Engine.
 
+THe project can be seen at [wwww.Causal-destiny-157016.appspot.com](http://causal-destiny-157016.appspot.com)
+
 ## Installation
 
 ### Prerequesites
@@ -46,10 +48,10 @@ dev_appserver.py .
 
 ### 6: Final Touches
 
-- [ ] Create a README.md file explaining how to run your code.
-- [ ] Refactor your code so it is well structured, well commented, and conforms to the Python Style Guide.
+- [X] Create a README.md file explaining how to run your code.
+- [X] Refactor your code so it is well structured, well commented, and conforms to the Python Style Guide.
 - [ ] Make sure your project conforms to the rubric.
-- [ ] Deploy your app to appspot.com using gcloud app deploy.
-- [ ] Submit your project.
+- [X] Deploy your app to appspot.com using gcloud app deploy.
+- [X] Submit your project.
 - [ ] Revise your project and resubmit as necessary.
 - [ ] Pat yourself on the back!
