@@ -16,14 +16,15 @@
             <a class="non-link header-title" href="/">Runar T. Blog</a>
             <nav class="navbar row u-pull-right">
                 {% if signed_in %}
-                    <a class="nav-link" href="/new_blog_post">Create new blog post</a>
-                    <span class="nav-signed-in">
-                      <strong>{{ signed_in }}</strong>
-                      <a class="nav-link" href="/logout">Logout</a>
+                    <a class="nav-item" href="/new_blog_post"><i class="fa-nav-icon fa fa-envelope" aria-hidden="true"></i>Create new blog post</a>
+                    <span class="nav-item nav-signed-in">
+                      <a class="nav-item" href="/logout"><i class="fa-nav-icon fa fa-sign-out" aria-hidden="true"></i>
+                        Logout <strong>({{ signed_in }})</strong></a>
                     </span>
                 {% else %}
-                    <a class="nav-link" href="/signup">Sign Up!</a>
-                    <a class="nav-link" href="/login">Login</a>
+                    <a class="nav-item" href="/signup"><i class="fa-nav-icon fa fa-user-plus" aria-hidden="true"></i>Sign Up!</a>
+                    <a class="nav-item" href="/login">
+                      <i class="fa-nav-icon fa fa-sign-in" aria-hidden="true"></i>Login</a>
                 {% endif %}
             </nav>
         </div>

@@ -3,32 +3,28 @@ body {
     background-color: #60506e;
     font-family: 'Raleway', sans-serif;
     font-size: 1.8rem;
+    color: #c9c4cf;
 }
 
 .non-link {
     color: #c9c4cf;
     text-decoration: none;
 }
+.fa-nav-icon {
+  padding: 0 10px;
+}
 
 .header {
     background-color: #210c36;
-    /*color: #c9aae4;*/
     padding: 20px 10px;
     text-align: center;
-}
-
-.navbar {
-    font-size: 1.8rem;
-    color: #c9c4cf;
-}
-.nav-signed-in {
-
 }
 
 footer {
     margin-top: 20px;
     background-color: #4a3b58;
     padding: 50px;
+        color: #c9c4cf;
 }
 
 .container {
@@ -51,7 +47,7 @@ h1 {
 
 .header-title {
     font-family: 'Indie Flower', cursive;
-    color: #f95e5e;
+    color: #95c8ec;
     font-size: 4.8rem;
     text-align: center;
     margin: 0 auto;
@@ -83,7 +79,6 @@ label {
 
 .title-input {
     width: 400px;
-    /*height: 200px;*/
     font-size: 17px;
     font-family: monospace;
 }
@@ -151,7 +146,7 @@ hr {
 
 .blog-entry-spacer {
     width: 50%;
-    /*border-bottom: 3px solid red;*/
+    border-bottom: 3px solid #999;
     margin: 25px auto 50px;
 }
 
@@ -186,16 +181,13 @@ footer {
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
-    /*flex-direction: column;*/
 }
 
 .social-entry {
     max-width: 50px;
-    color: black;
 }
 
 .social-entry i {
-    font-size: 24px;
-    color: #001233;
-    text-shadow: 3px 3px 3px #aaa;
+    font-size: 28px;
+    color: #c9c4cf;
 }
