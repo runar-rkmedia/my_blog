@@ -1,5 +1,5 @@
 """Used for dev-purposes to have some test-data quickly."""
-from Entities import BlogEntity,blog_key, UserEntity
+from Entities import BlogEntity, blog_key, UserEntity
 from random import randint
 
 # UserEntity.register(username='Johnny', password='pass')
@@ -12,54 +12,97 @@ from random import randint
 # UserEntity.register(username='July', password='pass')
 users = UserEntity.all()
 
+title_list = [
+    'Id ex est cupidatat aliqua reprehenderit magna tempor.',
+    'Ea sint fugiat amet nulla reprehenderit nostrud esse deserun.',
+    'Pariatur ut consequat cupidatat exercitation ullamco eiusmod officia.',
+    'Cillum incididunt ullamco adipisicing aute dolore amet adipisicing.',
+    'Ut sit magna duis est eiusmod incididunt deserunt ea elit sunt amet.',
+    'Laborum non enim quis fugiat culpa fugiat dolore consequat laboris.',
+    'Cupidatat minim enim consequat laboris aute elit et excepteur nisi officia.',
+    'Anim non ipsum labore enim consectetur pariatur laborum officia.',
+    'Nisi aliquip tempor qui labore occaecat id deserunt et.',
+    'Eu deserunt adipisicing laborum sint labore proident ipsum.',
+    'Eiusmod dolore cupidatat pariatur anim deserunt voluptate minim non enim.',
+    'Eiusmod velit proident minim amet exercitation sunt duis.'
+]
+
+article_paragraphgs = [
+    """
+Deserunt dolore do cillum irure ipsum ea anim. Enim
+aute esse minim consectetur id velit tempor. Cillum fugiat non commodo nisi ut
+irure Lorem exercitation.
+""", """
+Occaecat id mollit laboris proident cillum adipisicing culpa quis aliquip sint
+veniam. Quis nisi qui laboris do aute ut deserunt ullamco. Pariatur ex nostrud
+aliquip cillum et consectetur ipsum in tempor in. Deserunt culpa adipisicing
+adipisicing officia ullamco ea eu mollit aliqua.
+""", """
+Officia ipsum sit mollit adipisicing duis est officia. Labore occaecat dolore
+ea velit dolore magna deserunt dolore excepteur labore. Exercitation nostrud
+officia ea qui qui et in nostrud. Quis minim adipisicing est ut proident ut ut
+tempor nulla exercitation id.
+""", """
+Ex eu incididunt sint sint voluptate eiusmod aute amet minim fugiat nostrud.
+Sunt nostrud velit do mollit anim esse nostrud incididunt id. Cupidatat sit
+enim Lorem ut commodo labore enim magna fugiat labore sunt.
+""", """
+Eu velit ut laborum dolor in velit consectetur. Lorem elit adipisicing
+cupidatat ex aliqua exercitation ex duis anim. Officia magna dolor in enim eu
+sit nulla pariatur. Tempor labore velit commodo est occaecat nostrud ullamco
+elit nostrud occaecat anim.
+""", """
+Qui ea voluptate ut sit qui velit duis irure. Id nostrud deserunt ipsum duis do
+officia voluptate ullamco Lorem excepteur laboris. Minim ullamco id aliquip
+labore excepteur proident dolore cupidatat est laborum laboris.
+""", """
+Cillum ex qui ex est laborum aute duis officia. Anim id mollit ullamco id do eu
+amet. Magna pariatur magna occaecat quis ut proident sunt aliqua anim deserunt.
+Aliqua nulla pariatur excepteur ullamco velit voluptate fugiat irure sint.
+""", """
+Cillum est dolore deserunt aliquip mollit consectetur ea duis. Ut nostrud ut
+nisi non culpa irure magna cupidatat dolore. Esse exercitation consectetur quis
+nisi pariatur sint elit ullamco ad aliqua.
+""", """
+Consequat amet sunt culpa pariatur do ullamco laboris eiusmod. Do dolore anim
+incididunt eu aute nostrud sint mollit. Consectetur anim aute enim minim
+consectetur ad irure.
+""", """
+Est elit est veniam nisi laboris aliqua id nulla culpa. Mollit amet fugiat do
+fugiat dolor nisi tempor voluptate Lorem incididunt laborum. Ullamco laboris
+ullamco ex cillum nulla non labore mollit.
+""", """
+Aute duis proident adipisicing aliqua esse dolore ad. Tempor ad voluptate
+consectetur excepteur do esse tempor laborum esse labore sint. Qui ullamco
+tempor nulla irure officia tempor amet consequat et.
+""", """
+Occaecat officia consequat mollit occaecat voluptate nostrud adipisicing est
+aute quis laborum. Lorem ex velit excepteur officia sunt non laborum aliquip
+ea. Est tempor Lorem excepteur ipsum exercitation deserunt consectetur aliqua
+id.
+""", """
+Est esse excepteur ea nostrud nostrud nostrud labore ut nostrud tempor. Dolore
+elit pariatur deserunt excepteur ut nisi reprehenderit velit. Aute id amet
+nostrud cillum in esse esse aute consectetur cillum.
+"""
+
+
+]
+
+
 def dev_create_some_blog_posts():
     """Generator for random blog posts, for testing in development."""
-    for i in range(0, 45):
+    for i in range(0, 2):
+        article = ""
+        for j in range(0, randint(1, len(article_paragraphgs))):
+            if j > 0:
+                article += "<br>"
+            article += article_paragraphgs[j]
+
         a = BlogEntity(
             parent=blog_key(),
-            created_by=users[randint(0, users.count()-1)],
-            title='Some Title {}'.format(i),
-            article="""
-            Cernantur lorem sint e nulla, nisi si ea eram quibusdam in doctrina enim
-            excepteur, te quae fabulas praetermissum te dolor nam est export nostrud, tempor
-            o senserit a sint arbitror exquisitaque ad noster fabulas mandaremus. Cernantur
-            ut nisi consequat, lorem mentitum e lorem sint ubi qui cillum hic irure, dolore
-            fabulas ut senserit, ad si domesticarum quo o noster se legam ne officia aute
-            eiusmod nescius, sunt laboris est minim constias. Amet cohaerescant mandaremus
-            magna incurreret. Singulis e aute et laboris fore anim singulis constias an qui
-            a adipisicing e hic veniam nostrud probant, cupidatat eram do laboris
-            imitarentur e deserunt nisi quis te anim, nam export labore aliqua fabulas ex
-            singulis ut malis vidisse.Id duis arbitror arbitrantur, pariatur velit magna an
-            nulla si est dolor ad quem an velit ubi quamquam in culpa laborum do constias
-            quid o deserunt nisi expetendis, anim mandaremus eu dolore quae, nisi mandaremus
-            in familiaritatem. Ab sunt cupidatat probant, ut sint sunt fugiat possumus.
-            Quibusdam noster fore te quis et si quem constias ut senserit, o quo
-            despicationes e o eu philosophari.
-
-            Quem ubi iudicem, sunt incurreret cernantur. Ab consequat ex voluptate, id minim
-            iis tamen a veniam tractavissent voluptate aliqua nescius ne excepteur illum est
-            singulis fidelissimae, hic do duis multos legam ut excepteur eram possumus ex
-            ipsum fabulas ita iudicem, minim ne deserunt est eram. Ubi quem illustriora non
-            do ut cohaerescant est magna ullamco ab incididunt iis te multos fore non
-            vidisse.Ea eram te multos quo o tempor praetermissum, litteris ne cupidatat ut
-            illum eu singulis sed a nulla deserunt fabulas se excepteur aute eu incurreret
-            sempiternum e si ne graviterque in est sed quorum quorum enim. Vidisse aut
-            minim. Est fugiat cernantur id amet aut o fugiat tempor, ex velit ea aute, et
-            export vidisse.
-
-            Ne elit ea culpa ex magna fabulas ad despicationes non nostrud enim quamquam,
-            expetendis philosophari ab nescius, fabulas amet constias mentitum quem, tamen
-            cupidatat ne quamquam aut ita nam praesentibus ea nulla do occaecat. Fabulas in
-            ipsum. Culpa non officia, quibusdam illum constias te velit ne fore commodo
-            ullamco e officia est aliqua probant.Fabulas graviterque hic pariatur ea ad
-            dolor anim veniam ingeniis a ingeniis in voluptate, dolore iudicem sed aliqua
-            quid, a si eram incurreret, e fore laborum appellat et iis eram tempor
-            coniunctione quo constias doctrina ut praetermissum. Appellat sunt nulla id
-            duis, o cillum e sunt, voluptate illum et voluptate praesentibus, dolore
-            pariatur iis incididunt. Export voluptate est sempiternum quo nulla quibusdam ad
-            adipisicing, arbitror quae sunt singulis illum, eu mandaremus ne arbitror.
-            Quamquam quorum dolor singulis minim, nescius quorum appellat mentitum.
-            """
-            )
+            created_by=users[randint(0, users.count() - 1)],
+            title='{} {}'.format(i+1, title_list[randint(0, len(title_list)-1)]),
+            article=article)
         a.put()
-dev_create_some_blog_posts()
+# dev_create_some_blog_posts()

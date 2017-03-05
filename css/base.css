@@ -1,8 +1,24 @@
+.header {
+  background-color: #736283;
+  /*color: #c9aae4;*/
+  padding: 20px 10px;
+}
+
 .header-title {
-  margin: 2em 0em;
+  color: #9cc8db;
+}
+.header h1 {
+  padding: 0;
+  margin: 0;
 }
 .non-link {
   text-decoration: none;
+}
+.navbar {
+  padding-top: 20px;
+}
+.navbar a{
+  color: #c9aae4;
 }
 footer {
   margin-top: 100px;
@@ -124,5 +140,4 @@ footer {
   font-size: 24px;
   color: #001233;
   text-shadow: 3px 3px 3px #aaa;
-  add
 }
