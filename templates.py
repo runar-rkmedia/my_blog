@@ -155,7 +155,7 @@ class Blogs(Handler):
         else:
             page_to_show = 1
 
-        limit = 10
+        limit = 5
         offset = (page_to_show - 1) * limit
         totalArticles = BlogEntity.all().count(1000)
         totalPages = int(ceil(float(totalArticles) / limit))
