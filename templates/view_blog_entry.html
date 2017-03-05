@@ -5,6 +5,9 @@
             <a class="non-link" href="/blogs/{{ blog_entry.key().id() }}">{{blog_entry.title}}</a>
         </h3>
         <div class="three columns blog-entry-extra-info">
+          {% if user and (user and user.key().id() == blog_entry.created_by.key().id()) %}
+          <div class="edit_post"><a href="/edit_blog_post?blog_id={{  blog_entry.created_by.key().id() }}">Edit</a></div>
+          {% endif %}
             <div class="created_by_and_when">
                 <div class="blog-entry-created-by">
                     by
