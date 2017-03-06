@@ -172,20 +172,15 @@ class BlogPost(Handler):
         except myExceptions.VoteOnOwnPostNotAllowed:
             self.redirect("/error?errorType=VoteOnOwnPostNotAllowed")
 
-    def renderThis(self, blog_id):
+    def get(self, blog_id):  # noqa
         """Retrieve the blog-id from the url and show it."""
-        if blog_id.isdigit():
-            blog_id = int(blog_id)
-            blog_entry = BlogEntity.get_by_id(blog_id, parent=blog_key())
+        blog_entry = BlogEntity.get_by_id_str(blog_id)
         if not blog_entry:
             self.error(404)
             return
         self.render("blog_permalink.html",
                     article=blog_entry,
                     parser=self.render_blog_article)
-
-    def get(self, blog_id):  # noqa
-        self.renderThis(blog_id)
 
 
 class NewBlogPost(Handler):
