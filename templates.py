@@ -110,12 +110,8 @@ class Handler(webapp2.RequestHandler):
         """Voting on a post."""
         voteType = self.request.get("voteDirection")
         vote_blog_id = self.request.get("blog_id")
-        if vote_blog_id.isdigit():
-            vote_blog_id = int(vote_blog_id)
-            blog_entry = BlogEntity.get_by_id(vote_blog_id, parent=blog_key())
-
-            blog_entry.vote(voteBy=self.user, voteType=voteType)
-            return True
+        vote_blog_entry = BlogEntity.get_by_id_str(vote_blog_id)
+        vote_blog_entry.vote(voteBy=self.user, voteType=voteType)
 
 
 class Welcome(Handler):
