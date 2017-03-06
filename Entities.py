@@ -114,11 +114,12 @@ class VotesEntity(db.Model):
     @classmethod
     def get_votes_on_post(cls, voteOn):
         """Return up- and downvotes for the blog_post."""
-        upvotes = VotesEntity.all().filter(
+        votes = {}
+        votes['up'] = VotesEntity.all().filter(
             'voteOn = ', voteOn).filter('voteType = ', 'up').count()
-        downvotes = VotesEntity.all().filter(
+        votes['down'] = VotesEntity.all().filter(
             'voteOn = ', voteOn).filter('voteType = ', 'down').count()
-        return upvotes, downvotes
+        return votes
 
     @classmethod
     def get_votes_by_user(cls, voteBy):

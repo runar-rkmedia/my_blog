@@ -95,10 +95,14 @@ class Handler(webapp2.RequestHandler):
         else:
             self.user = False  # noqa
 
-    def render_blog_article(self, article, **kw):
+    def render_blog_article(self, blog_entry, **kw):
         """Render an html-element for a single blog-entry."""
-        self._render_text = article.article.replace('\n', '<br>')  # noqa
-        return self.render_str("view_blog_entry.html", blog_entry=article, **kw)
+        self._render_text = blog_entry.article.replace('\n', '<br>')  # noqa
+        kw['user_owns_post'] = (
+            self.user and self.user.key().id() == blog_entry.created_by.key().id())
+        kw['user_upvoted'] = self.user and blog_entry.getVotesFromUser(self.user) == 'up'
+        kw['user_downvoted'] = self.user and blog_entry.getVotesFromUser(self.user) == 'down'
+        return self.render_str("view_blog_entry.html", blog_entry=blog_entry, **kw)
 
     def render_page_buttons(self, pages, currentPage):
         """Render an html-element for a page-navigation."""
@@ -112,7 +116,6 @@ class Handler(webapp2.RequestHandler):
         vote_blog_id = self.request.get("blog_id")
         vote_blog_entry = BlogEntity.get_by_id_str(vote_blog_id)
         vote_blog_entry.vote(voteBy=self.user, voteType=voteType)
-
 
 class Welcome(Handler):
     """Welcome message for user."""

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {% extends "base.html" %}
-
 {% block content %}
+<h1>ke:{{user_owns_post}}{{kw}}</h1>
         {{ parser(article, user=user) | safe}}
 {% endblock %}
