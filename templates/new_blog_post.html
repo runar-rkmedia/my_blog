@@ -1,10 +1,14 @@
 <!DOCTYPE html> {% extends "base.html" %} {% block content %}
 <div class="row new-post">
     {% if blog_entry %}
-    <h2>Edit blogpost:</h2><q class="disabled">{{blog_entry.title}}</q> {% else %}
-    <h2>Create new blog post</h2> {% endif %} {% if error_notUnique %}
+    <h2>Edit blogpost:</h2><q class="disabled">{{blog_entry.title}}</q>
+    {% else %}
+    <h2>Create new blog post</h2>
+    {% endif %}
+    {% if error_notUnique %}
     <div class="row error">The title is not unique</div>
-    {% endif %} {% if error_missing_fields %}
+    {% endif %}
+    {% if error_missing_fields %}
     <div class=" row error">Need both the Title ad the Article</div>
     {% endif %}
     <form method="post">
@@ -14,7 +18,8 @@
         </div>
         <div class="row form-row">
             {% if blog_entry %}
-            <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}"> {% endif %}
+            <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
+            {% endif %}
             <label for="article-input" class="form-label">Article</label>
             <textarea name="article" class="u-full-width article-input" id="article-input" placeholder="Enter your article here. HTML-tags are allowed.">{{ article }}</textarea>
         </div>

@@ -302,18 +302,6 @@ class Logout(Handler):
         self.redirect('/signup')
 
 
-class Error(Handler):
-    """Error page."""
-
-    def get(self):
-        """Show errorpage."""
-        errorType = self.request.get("errorType")
-        redirect = self.request.get("redirect")
-        if redirect == "":
-            redirect = '/'
-        self.render('error.html', errorType=errorType, redirect=redirect)
-
-
 class SignUp(Handler):
     """View for sign-up-form."""
 
@@ -364,6 +352,18 @@ class SignUp(Handler):
                             username=username,
                             email=email,
                             )  # noqa
+
+
+class Error(Handler):
+    """Error page."""
+
+    def get(self):
+        """Show errorpage."""
+        errorType = self.request.get("errorType")
+        redirect = self.request.get("redirect")
+        if redirect == "":
+            redirect = '/'
+        self.render('error.html', errorType=errorType, redirect=redirect)
 
 
 app = webapp2.WSGIApplication([
