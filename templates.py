@@ -25,6 +25,7 @@ import verify_signup
 from hash_functions import make_secure_val, check_secure_val
 from Entities import BlogEntity, UserEntity, blog_key
 import myExceptions
+# import test_data
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(
@@ -143,9 +144,7 @@ class Blogs(Handler):
             self.vote_on_blog_post()
             self.redirect("/thanks?redirect=/blogs")
         except myExceptions.VoteOnOwnPostNotAllowed:
-            self.render("/error.html",
-                        errorType='VoteOnOwnPostNotAllowed')
-
+            self.redirect("/error?errorType=VoteOnOwnPostNotAllowed")
 
     def get(self):
         """Retrieve all the latest blog-entries and render them to user."""
@@ -171,10 +170,11 @@ class BlogPost(Handler):
 
     def post(self, blog_id):
         """Vote, redirect to thanks-page if valid vote."""
-        if self.vote_on_blog_post():
+        try:
+            self.vote_on_blog_post()
             self.redirect("/thanks?redirect=/blogs/{}".format(blog_id))
-        else:
-            self.renderThis(blog_id)
+        except myExceptions.VoteOnOwnPostNotAllowed:
+            self.redirect("/error?errorType=VoteOnOwnPostNotAllowed")
 
     def renderThis(self, blog_id):
         """Retrieve the blog-id from the url and show it."""
@@ -188,12 +188,12 @@ class BlogPost(Handler):
                     article=blog_entry,
                     parser=self.render_blog_article)
 
-    def get(self, blog_id): # noqa
+    def get(self, blog_id):  # noqa
         self.renderThis(blog_id)
 
 
-class CreateOrEditBlogPost(Handler):
-    """View for creating or editing a  post."""
+class NewBlogPost(Handler):
+    """View for creating a new post."""
 
     def render_this(self, title="", article="", **kw):
         """Renders the 'new blog'-form, but only if the user is logged in."""
@@ -205,11 +205,6 @@ class CreateOrEditBlogPost(Handler):
 
     def get(self):
         """Renders the 'new blog'-form, but only if the user is logged in."""
-        blog_id = self.request.get("blog_id")
-        if blog_id.isdigit():
-            blog_id = int(blog_id)
-            blog_entry = BlogEntity.get_by_id(blog_id, parent=blog_key())
-            print blog_id, blog_entry
         self.render_this()
 
     def post(self):
@@ -232,6 +227,56 @@ class CreateOrEditBlogPost(Handler):
             else:
                 self.render_this(title=title, article=article,
                                  error_missing_fields=True)
+
+
+class EditBlogPost(Handler):
+    """View for Eediting a post."""
+
+    def render_this(self, blog_entry=None, title="", article="", **kw):
+        """Renders the 'edit blog'-form, but only if the user is logged in."""
+        if (self.user and blog_entry and
+                self.user.key().id() == blog_entry.created_by.key().id()):
+
+            self.render('new_blog_post.html', title=title,
+                        article=article, blog_entry=blog_entry, **kw)
+        else:
+            self.redirect("/error?errorType=Not_valid_blog_id_or_wrong_user")
+
+    def get(self):
+        """If blog_id is in url, lookup BlogEntity and pass along"""
+        blog_id = self.request.get("blog_id")
+        blog_entry = BlogEntity.get_by_id_str(blog_id)
+        if blog_entry:
+            self.render_this(blog_entry=blog_entry,
+                             title=blog_entry.title,
+                             article=blog_entry.article)
+        else:
+            self.render('/error?error=Not_valid_blog_id_or_wrong_user')
+
+    def post(self):
+        """Create/edit a blog-entry if logged in and form filled out correcly."""
+        if not self.user:
+            self.redirect('/login')
+        else:
+            title = self.request.get("title").strip()
+            article = self.request.get("article")
+
+            # If user is editing a post, we should get a blog_id
+            blog_id = self.request.get("blog_id")
+            blog_entry = BlogEntity.get_by_id_str(blog_id)
+            if (blog_entry and self.user and
+                    self.user.key().id() == blog_entry.created_by.key().id()):
+                if title and article:
+                    blog_entry.title = title
+                    blog_entry.article = article
+                    blog_entry.put()
+                    self.redirect('/blogs/%s' % str(blog_entry.key().id()))
+                else:
+                    self.render_this(title=title, article=article,
+                                     error_missing_fields=True)
+            else:
+                self.redirect(
+                    '/error?error=Not_valid_blog_id_or_wrong_user')
 
 
 class Login(Handler):
@@ -265,13 +310,17 @@ class Logout(Handler):
         self.delete_cookie('user')
         self.redirect('/signup')
 
+
 class Error(Handler):
     """Error page."""
 
     def get(self):
         """Show errorpage."""
-        self.delete_cookie('user')
-        self.redirect('/signup')
+        errorType = self.request.get("errorType")
+        redirect = self.request.get("redirect")
+        if redirect == "":
+            redirect = '/'
+        self.render('error.html', errorType=errorType, redirect=redirect)
 
 
 class SignUp(Handler):
@@ -331,11 +380,11 @@ app = webapp2.WSGIApplication([
     ('/signup', SignUp),
     ('/login', Login),
     ('/logout', Logout),
+    ('/error', Error),
     ('/thanks', Thanks),
     ('/welcome', Welcome),
-    ('/new_blog_post', CreateOrEditBlogPost),
+    ('/new_blog_post', NewBlogPost),
     ('/blogs', Blogs),
-    ('/error', Error),
     ('/blogs/(\d+)', BlogPost),  # noqa
-    ('/edit_blog_post', CreateOrEditBlogPost),  # noqa
+    ('/edit_blog_post', EditBlogPost),  # noqa
 ], debug=True)

@@ -63,6 +63,12 @@ class BlogEntity(db.Model):
         return blogEntry
 
     @classmethod
+    def get_by_id_str(cls, blog_id):
+        """Return a blog_entry from blog_id(str) if valid."""
+        if blog_id.isdigit():
+            return BlogEntity.get_by_id(int(blog_id), parent=blog_key())
+
+    @classmethod
     def create_blog_entry(cls, parent, title, article, created_by):
         """Create a blog entry, verify data first."""
         exisistingTitle = BlogEntity.by_title(title)
@@ -137,7 +143,8 @@ class VotesEntity(db.Model):
         They also cannot vote on their own posts.
         """
         if voteOn.created_by.key().id() == voteBy.key().id():
-            raise myExceptions.VoteOnOwnPostNotAllowed('Cannot vote on own post')
+            raise myExceptions.VoteOnOwnPostNotAllowed(
+                'Cannot vote on own post')
         vote_entry = VotesEntity.all().filter(
             'voteBy = ', voteBy).filter(
                 'voteOn = ', voteOn).get()
