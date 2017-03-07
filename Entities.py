@@ -2,6 +2,7 @@
 
 from google.appengine.ext import db  # noqa
 from lib.pybcrypt import bcrypt  # This is slow, one should use regular bcrypt.
+import datetime
 import myExceptions
 
 
@@ -90,6 +91,7 @@ class BlogEntity(db.Model):
         elif created_by.key().id() == self.created_by.key().id():
             self.title = title
             self.article = article
+            self.last_modified = datetime.datetime.now()
             self.put()
             return self
         else:
