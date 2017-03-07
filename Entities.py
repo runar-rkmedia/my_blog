@@ -82,7 +82,7 @@ class BlogEntity(db.Model):
         else:
             raise myExceptions.NotUnique('Title of blog needs to be unique')
 
-    def edit_blog_entry(self, parent, title, article, created_by):
+    def edit_blog_entry(self, title, article, created_by):
         """Edit a blog entry, verify data first."""
         existingTitle = BlogEntity.by_title(title)
         if existingTitle and existingTitle.key().id() != self.key().id():

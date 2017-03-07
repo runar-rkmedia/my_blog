@@ -289,8 +289,7 @@ class EditBlogPost(Handler):
                     self.user.key().id() == blog_entry.created_by.key().id()):
                 if title and article:
                     try:
-                        blog_entry.edit_blog_entry(parent=blog_key(),
-                                                   created_by=self.user,
+                        blog_entry.edit_blog_entry(created_by=self.user,
                                                    title=title,
                                                    article=article)
                         self.redirect('/blogs/%s' % str(blog_entry.key().id()))
