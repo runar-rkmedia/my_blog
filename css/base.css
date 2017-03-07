@@ -101,20 +101,20 @@ hr {
     color: white;
 }
 
-.fabutton:hover {
-    color: red
+.vote-button-up:hover {
+    color:#0b8e00
 }
 
-@media (max-width: 549px) {
-    .blog-entry-extra-info {
-        display: flex;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-    }
+.vote-button-down:hover {
+    color:#8e0000
 }
 
 .blog-entry-extra-info {
     text-align: right;
+}
+.blog-entry-last-modified {
+  font-size: 1.4rem;
+  opacity: 0.6;
 }
 
 .user-upvoted {
@@ -184,4 +184,28 @@ footer {
 
 .thanks {
     text-align: center;
+}
+@media (max-width: 767px) {
+  .container{
+    padding: 10px 15px;
+  }
+}
+@media (max-width: 549px) {
+    .blog-entry-extra-info {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+    }
+    .container {
+      font-size: 1.6rem;
+    }
+    h2 {
+      font-size: 3.0rem;
+    }
+    h3 {
+      font-size: 2.6rem;
+    }
+    h4 {
+      font-size: 2.2rem;
+    }
 }
