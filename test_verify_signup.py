@@ -18,7 +18,7 @@ from verify_signup import (valid_email,  # noqa
                            valid_username,
                            verify_passwords_matches
                           )
-from Entities import UserEntity  # noqa
+from Entities import VotesEntity, UserEntity, BlogEntity, blog_key  # noqa
 
 
 class TestModel(ndb.Model):
@@ -65,9 +65,119 @@ class DatastoreTestCase(unittest.TestCase):
         self.testbed.deactivate()
 
 
+class BlogEntityTest(DatastoreTestCase):
+    """Test for blog entries."""
+
+    def test_create_blog_entry(self):
+        """."""
+        james = UserEntity.register(username='james', password='pass')
+
+        self.assertEqual(
+            type(BlogEntity.create_blog_entry(
+                parent=blog_key(),
+                title='a',
+                article='content',
+                created_by=james)),
+            BlogEntity, msg="'create_blog_entry' should return a BlogEntity")
+
+    def test_create_blog_entry_with_existing_title(self):
+        """BlogEntity.register should fail with a non-unique title."""
+        james = UserEntity.register(username='james', password='pass')
+
+        BlogEntity.create_blog_entry(
+            parent=blog_key(),
+            title='a',
+            article='content',
+            created_by=james)
+        self.assertRaises(
+            myExceptions.NotUnique,
+            BlogEntity.create_blog_entry,
+            parent=blog_key(),
+            title='a',
+            article='content',
+            created_by=james,
+        )
+
+    def test_blog_get_by(self):
+        """get_by_id_str and by_title should the correct BlogEntity if valid input"""
+        james = UserEntity.register(username='james', password='pass')
+
+        a = BlogEntity.create_blog_entry(
+            parent=blog_key(),
+            title='a title',
+            article='a content',
+            created_by=james)
+
+        a_id = str(a.key().id())
+
+        self.assertEqual(
+            BlogEntity.get_by_id_str(a_id).key().id(),
+            a.key().id(),
+            msg="'by_title' should return the 'a'-blog_entry for title 'a title'")
+
+        self.assertEqual(
+            BlogEntity.by_title('a title').key().id(),
+            a.key().id(),
+            msg="'get_by_id_str' should return the 'a'-blog_entry")
+
+    def test_blog_vote_on_own_post_fail(self):
+        """user cannot vote on own post"""
+        james = UserEntity.register(username='james', password='pass')
+
+        a = BlogEntity.create_blog_entry(
+            parent=blog_key(),
+            title='a title',
+            article='a content',
+            created_by=james)
+
+        self.assertRaises(myExceptions.VoteOnOwnPostNotAllowed,
+                          a.vote, voteBy=james, voteType='up')
+
+    def test_blog_vote_on_others_post(self):
+        """user should be able to vote on other posts"""
+        james = UserEntity.register(username='james', password='pass')
+        john = UserEntity.register(username='john', password='pass')
+        jimbo = UserEntity.register(username='jimbo', password='pass')
+        jake = UserEntity.register(username='jake', password='pass')
+        jonas = UserEntity.register(username='jonas', password='pass')
+
+        a = BlogEntity.create_blog_entry(
+            parent=blog_key(),
+            title='a title',
+            article='a content',
+            created_by=james)
+
+        a.vote(voteBy=john, voteType='up')
+        a.vote(voteBy=jimbo, voteType='down')
+        a.vote(voteBy=jake, voteType='up')
+        a.vote(voteBy=jonas, voteType='up')
+
+        self.assertEqual(
+            a.getVotes(),
+            {'up':3, 'down':1},
+            msg="'getvotes' should return a dict with keyword 'up' and 'down, here with values 3 and 1'") # noqa
+
+        self.assertEqual(
+            a.getVotesFromUser(
+                john), 'up', msg="'voting 'up' should set the vote to 'up'")
+
+        a.vote(voteBy=john, voteType='up')
+        self.assertEqual(
+            a.getVotesFromUser(
+                john), None, msg="'Voting 'up' twice should remove the vote")
+
+        self.assertEqual(
+            a.getVotesFromUser(
+                jimbo), 'down', msg="'voting 'down' should set the vote to 'down'")
+
+        a.vote(voteBy=jimbo, voteType='down')
+        self.assertEqual(
+            a.getVotesFromUser(
+                jimbo), None, msg="'Voting 'down' twice should remove the vote")
+
+
 class UserEntityTest(DatastoreTestCase):
     """Test for User Account Entity."""
-
 
     def test_UserEntity_register(self):
         """UserEntity.register should create the useraccount, with correct data."""
@@ -98,7 +208,6 @@ class UserEntityTest(DatastoreTestCase):
                           UserEntity.register,
                           username='Jamie',
                           password='password123')
-
 
 
 class UsernameTest(unittest.TestCase):
