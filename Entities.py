@@ -71,8 +71,8 @@ class BlogEntity(db.Model):
     @classmethod
     def create_blog_entry(cls, parent, title, article, created_by):
         """Create a blog entry, verify data first."""
-        exisistingTitle = BlogEntity.by_title(title)
-        if not exisistingTitle:
+        existingTitle = BlogEntity.by_title(title)
+        if not existingTitle:
             blogEntry = BlogEntity(parent=parent,
                                    title=title,
                                    article=article,
@@ -81,6 +81,17 @@ class BlogEntity(db.Model):
             return blogEntry
         else:
             raise myExceptions.NotUnique('Title of blog needs to be unique')
+
+    def edit_blog_entry(self, parent, title, article, created_by):
+        """Edit a blog entry, verify data first."""
+        existingTitle = BlogEntity.by_title(title)
+        if existingTitle and existingTitle.key().id() != self.key().id():
+            raise myExceptions.NotUnique('Title of blog needs to be unique')
+        else:
+            self.title = title
+            self.article = article
+            self.put()
+        return self
 
     def getVotes(self):
         """Return all votes on this post."""
