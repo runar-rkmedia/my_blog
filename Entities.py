@@ -87,11 +87,13 @@ class BlogEntity(db.Model):
         existingTitle = BlogEntity.by_title(title)
         if existingTitle and existingTitle.key().id() != self.key().id():
             raise myExceptions.NotUnique('Title of blog needs to be unique')
-        else:
+        elif created_by.key().id() == self.created_by.key().id():
             self.title = title
             self.article = article
             self.put()
-        return self
+            return self
+        else:
+            raise myExceptions.EditOthersPosts('You do not have access to edit this post.')
 
     def getVotes(self):
         """Return all votes on this post."""

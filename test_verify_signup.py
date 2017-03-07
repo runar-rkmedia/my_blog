@@ -98,6 +98,63 @@ class BlogEntityTest(DatastoreTestCase):
             created_by=james,
         )
 
+    def test_edit_blog_entry_with_existing_title(self):
+        """edit_blog_post should fail if using a title from a different post."""
+        james = UserEntity.register(username='james', password='pass')
+
+        a = BlogEntity.create_blog_entry(
+            parent=blog_key(),
+            title='a',
+            article='content',
+            created_by=james)
+
+        BlogEntity.create_blog_entry(
+            parent=blog_key(),
+            title='b',
+            article='content',
+            created_by=james)
+
+        self.assertRaises(
+            myExceptions.NotUnique,
+            a.edit_blog_entry,
+            title='b',
+            article='contents',
+            created_by=james,
+        )
+
+    def test_edit_blog_entry_wrong_user(self):
+        """edit_blog_post should fail if using a title from a different post."""
+        james = UserEntity.register(username='james', password='pass')
+        jimmy = UserEntity.register(username='jimmy', password='pass')
+
+        a = BlogEntity.create_blog_entry(
+            parent=blog_key(),
+            title='a',
+            article='content',
+            created_by=james)
+
+        self.assertRaises(
+            myExceptions.EditOthersPosts,
+            a.edit_blog_entry,
+            title='a',
+            article='contents',
+            created_by=jimmy,
+        )
+
+    def test_edit_blog_entry_check_data(self):
+        """edit_blog_post should fail if using a title from a different post."""
+        james = UserEntity.register(username='james', password='pass')
+
+        a = BlogEntity.create_blog_entry(
+            parent=blog_key(),
+            title='a',
+            article='content',
+            created_by=james)
+
+        a.edit_blog_entry(title='abc', article='123', created_by=james)
+        self.assertEqual(a.title, 'abc', msg=None)
+        self.assertEqual(a.article, '123', msg=None)
+
     def test_blog_get_by(self):
         """get_by_id_str and by_title should the correct BlogEntity if valid input"""
         james = UserEntity.register(username='james', password='pass')
