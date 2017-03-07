@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <div class="row article">
     <div class="row article-title">
-        <h3 class="blog-entry-header nine columns">
+        <h3 class="blog-entry-header eight columns">
             <a class="non-link" href="/blogs/{{ blog_entry.key().id() }}">{{blog_entry.title}}</a>
         </h3>
-        <div class="three columns blog-entry-extra-info">
+        <div class="four columns blog-entry-extra-info">
             {% if user_owns_post %}
                 <div class="edit_post">
                     <a href="/edit_blog_post?blog_id={{ blog_entry.key().id() }}">Edit</a>
@@ -16,6 +16,9 @@
                     {{ blog_entry.created_by.username }}
                 </div>
                 <div class="blog-entry-created">{{blog_entry.created|datetime}}</div>
+                {% if blog_entry.created != blog_entry.last_modified %}
+                <div class="blog-entry-last-modified">Modified: {{blog_entry.last_modified|datetime}}</div>
+                {% endif %}
             </div>
 
             <div class="blog-votes">
@@ -24,7 +27,7 @@
                         type="submit"
                         name="voteDirection"
                         value="up"
-                        class="fabutton vote-button
+                        class="fabutton vote-button vote-button-up
                 {% if user_upvoted %}
                 user-upvoted
                 {% endif %}
@@ -45,7 +48,7 @@
                         type="submit"
                         name="voteDirection"
                         value="down"
-                        class="fabutton vote-button
+                        class="fabutton vote-button vote-button-down
                 {% if user_downvoted %}
                 user-downvoted
                 {% endif %}
@@ -103,4 +106,3 @@
         </div>
     {% endif %}
 </div>
-<h1>dsfdsa</h1>
