@@ -69,6 +69,7 @@
     <div class="blog-entry-body">
         <p class="blog-entry-body-p">{{ blog_entry.output_html_article() | safe }}</p>
     </div>
+    {% if single_post  %}
     <div class="blog-entry-comments">
         <hr>
         <h4>Comments</h4>
@@ -91,7 +92,7 @@
         {% else %}
             <p>Be the first to leave a comment</p>
         {% endif %}
-        {% if user and single_post %}
+        {% if user %}
             <form class="row add-comment-form" method="post">
                 <label for="comment">Comment</label>
                 <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
@@ -100,4 +101,5 @@
             </form>
         {% endif %}
     </div>
+    {% endif %}
 </div>
