@@ -5,9 +5,11 @@
             <a class="non-link" href="/blogs/{{ blog_entry.key().id() }}">{{blog_entry.title}}</a>
         </h3>
         <div class="three columns blog-entry-extra-info">
-          {% if user_owns_post %}
-          <div class="edit_post"><a href="/edit_blog_post?blog_id={{ blog_entry.key().id() }}">Edit</a></div>
-          {% endif %}
+            {% if user_owns_post %}
+                <div class="edit_post">
+                    <a href="/edit_blog_post?blog_id={{ blog_entry.key().id() }}">Edit</a>
+                </div>
+            {% endif %}
             <div class="created_by_and_when">
                 <div class="blog-entry-created-by">
                     by
@@ -30,67 +32,72 @@
                   disabled
                   {% endif %}
                   "
-                    {% if user_owns_post %}
+                        {% if user_owns_post %}
                         disabled="disabled"
-                    {% endif %}
-                    >
+                        {% endif %}>
                         <i class="
                         fa
                         fa-thumbs-up" aria-hidden="
                         true"></i>
-                </button>
-                <span class="voteCount">{{ blog_entry.getVotes()['up']}}</span>
-                <button
-                    type="submit"
-                    name="voteDirection"
-                    value="down"
-                    class="fabutton vote-button
+                    </button>
+                    <span class="voteCount">{{ blog_entry.getVotes()['up']}}</span>
+                    <button
+                        type="submit"
+                        name="voteDirection"
+                        value="down"
+                        class="fabutton vote-button
                 {% if user_downvoted %}
                 user-downvoted
                 {% endif %}
                 {% if user_owns_post %}
                   disabled
                 {% endif %}"
-                {% if user_owns_post %}
-                    disabled="disabled"
-                {% endif %}
-                    >
+                        {% if user_owns_post %}
+                        disabled="disabled"
+                        {% endif %}>
                         <i class="
                     fa
                     fa-thumbs-down" aria-hidden="
                     true"></i>
-            </button>
-            <span class="voteCount">{{ blog_entry.getVotes()['down']}}</span>
-            <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
-        </form>
+                    </button>
+                    <span class="voteCount">{{ blog_entry.getVotes()['down']}}</span>
+                    <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
+                </form>
+            </div>
+        </div>
     </div>
-</div>
-</div>
-<div class="blog-entry-body">
-<p class="blog-entry-body-p">{{ blog_entry.output_html_article() | safe }}</p>
-</div>
-<div class="blog-entry-comments">
-  <hr>
-  <h4>Comments</h4>
-  {% if blog_entry.get_comments().count() > 0 %}
-    {% for comment in blog_entry.get_comments() %}
-    <div class="row comment-item">
-      <div class="comment-item-header disabled">
-        {{comment.commentBy.username}} &ndash; {{ comment.created|datetime}}
-      </div>
-      <div class="comment--item-text"><blockquote>{{ comment.comment }}</blockquote></div>
+    <div class="blog-entry-body">
+        <p class="blog-entry-body-p">{{ blog_entry.output_html_article() | safe }}</p>
     </div>
-    {% endfor %}
-  {% else %}
-  <p>Be the first to leave a comment</p>
-  {% endif %}
-{% if user and single_post %}
-  <form class="row add-comment-form" method="post">
-    <label for="comment">Comment</label>
-    <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
-    <input class="eight columns" type="text" name="comment" id="comment">
-    <input class="three columns button-primary" type="submit" value="Post">
-  </form>
-{% endif %}
-</div>
+    <div class="blog-entry-comments">
+        <hr>
+        <h4>Comments</h4>
+        {% if blog_entry.get_comments().count() > 0 %}
+            {% for comment in blog_entry.get_comments().order('-created') %}
+                <div class="row comment-item">
+                    <div class="comment-item-header disabled">
+                        {{comment.commentBy.username}}
+                        &ndash;
+                        {{ comment.created|datetime}}
+                    </div>
+                    <div class="comment--item-text">
+                        <blockquote>{{ comment.comment }}</blockquote>
+                    </div>
+                {% if user and user.key().id() == comment.commentBy.key().id() %}
+                    <!-- Placeholder for editing comment -->
+                {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Be the first to leave a comment</p>
+        {% endif %}
+        {% if user and single_post %}
+            <form class="row add-comment-form" method="post">
+                <label for="comment">Comment</label>
+                <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
+                <input class="eight columns" type="text" name="comment" id="comment">
+                <input class="three columns button-primary" type="submit" value="Post">
+            </form>
+        {% endif %}
+    </div>
 </div>
