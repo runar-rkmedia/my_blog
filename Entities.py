@@ -98,10 +98,50 @@ class BlogEntity(db.Model):
         """Return an html-friendly version of the article."""
         return self.article.replace('\n', '<br>')  # noqa
 
+    def add_comment(self, commentBy, comment):
+        """Create a comment on this post."""
+        return CommentsEntity.comment_on_post(
+            commentOn=self, commentBy=commentBy, comment=comment)
+
+    def get_comments(self):
+        """Return all comments on this post."""
+        comments = CommentsEntity.get_comments_on_post(commentOn=self)
+        return comments
+
+
 
 def blog_key(name='default'):
     """helper-function."""
     return db.Key.from_path('blogs', name)
+
+
+class CommentsEntity(db.Model):
+    """Comments for blog_entries"""
+
+    commentBy = db.ReferenceProperty(UserEntity, required=True)
+    commentOn = db.ReferenceProperty(BlogEntity, required=True)
+    comment = db.StringProperty(required=True)
+    created = db.DateTimeProperty(auto_now_add=True)
+    last_modified = db.DateTimeProperty(auto_now_add=True)
+
+    @classmethod
+    def comment_on_post(cls, commentBy, commentOn, comment):
+        """Create a comment."""
+        comment_entry = CommentsEntity(
+            commentBy=commentBy,
+            commentOn=commentOn,
+            comment=comment)
+        comment_entry.put()
+        return comment_entry
+
+
+    @classmethod
+    def get_comments_on_post(cls, commentOn):
+        """Return comments for the blog_post."""
+        comments = CommentsEntity.all().filter(
+            'commentOn = ', commentOn)
+        return comments
+
 
 
 class VotesEntity(db.Model):

@@ -18,7 +18,7 @@ from verify_signup import (valid_email,  # noqa
                            valid_username,
                            verify_passwords_matches
                           )
-from Entities import VotesEntity, UserEntity, BlogEntity, blog_key  # noqa
+from Entities import CommentsEntity, VotesEntity, UserEntity, BlogEntity, blog_key  # noqa
 
 
 class TestModel(ndb.Model):
@@ -133,6 +133,44 @@ class BlogEntityTest(DatastoreTestCase):
         self.assertRaises(myExceptions.VoteOnOwnPostNotAllowed,
                           a.vote, voteBy=james, voteType='up')
 
+    def test_blog_add_comment(self):
+        """.add_comment should return a CommentEnity if valid"""
+        james = UserEntity.register(username='james', password='pass')
+
+        a = BlogEntity.create_blog_entry(
+            parent=blog_key(),
+            title='a title',
+            article='a content',
+            created_by=james)
+
+        self.assertEqual(
+            type(a.add_comment(commentBy=james, comment='Awesome')),
+            CommentsEntity)
+
+    def test_blog_get_comments(self):
+        """.get_comment should return a list of all CommentEnities on a post"""
+        james = UserEntity.register(username='james', password='pass')
+
+        a = BlogEntity.create_blog_entry(
+            parent=blog_key(),
+            title='a title',
+            article='a content',
+            created_by=james)
+
+        a.add_comment(commentBy=james, comment='test')
+
+        self.assertEqual(
+            type(a.get_comments()[0]),
+            CommentsEntity,
+            msg="'get_comments should return a query of CommentsEntity'")
+
+        self.assertEqual(
+            a.get_comments().count(),
+            1)
+
+        self.assertEqual(
+            a.get_comments()[0].comment, 'test')
+
     def test_blog_vote_on_others_post(self):
         """user should be able to vote on other posts"""
         james = UserEntity.register(username='james', password='pass')
@@ -174,6 +212,7 @@ class BlogEntityTest(DatastoreTestCase):
         self.assertEqual(
             a.getVotesFromUser(
                 jimbo), None, msg="'Voting 'down' twice should remove the vote")
+
 
 
 class UserEntityTest(DatastoreTestCase):
