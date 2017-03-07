@@ -22,6 +22,7 @@ from math import ceil
 import jinja2
 import webapp2
 import verify_signup
+from google.appengine.ext.db import BadValueError # noqa
 from hash_functions import make_secure_val, check_secure_val
 from Entities import BlogEntity, UserEntity, blog_key
 import myExceptions
@@ -110,12 +111,35 @@ class Handler(webapp2.RequestHandler):
                                pages=pages,
                                currentPage=currentPage)
 
-    def vote_on_blog_post(self):
-        """Voting on a post."""
+
+    def blog_comment_or_vote(self, redirect):
+        """Comment or vote on a blog_post."""
         voteType = self.request.get("voteDirection")
-        vote_blog_id = self.request.get("blog_id")
-        vote_blog_entry = BlogEntity.get_by_id_str(vote_blog_id)
-        vote_blog_entry.vote(voteBy=self.user, voteType=voteType)
+        comment = self.request.get("comment")
+        blog_id = self.request.get("blog_id")
+        blog_entry = BlogEntity.get_by_id_str(blog_id)
+        print comment, blog_entry
+        if voteType and blog_entry:
+            try:
+                blog_entry = BlogEntity.get_by_id_str(blog_id)
+                blog_entry.vote(voteBy=self.user, voteType=voteType)
+                self.render("/thanks.html", redirect=redirect)
+            except myExceptions.VoteOnOwnPostNotAllowed:
+                self.redirect("/error?errorType=VoteOnOwnPostNotAllowed")
+            except BadValueError:
+                 # TODO: Create for this in error.html
+                 # TODO: Create error-method which does POST instead of GET.
+                self.redirect("/error?errorType=BadValueError")
+        elif comment and blog_entry:
+            if len(comment) >= 1:
+                blog_entry.add_comment(commentBy=self.user, comment=comment)
+                self.render("/thanks.html", redirect=redirect)
+            else:
+                pass
+        else:
+            # TODO: Create for this in error.html
+            self.redirect("/error?errorType=unknown")
+
 
 class Welcome(Handler):
     """Welcome message for user."""
@@ -138,12 +162,8 @@ class Blogs(Handler):
     """Show a list of the latest blogs."""
 
     def post(self):
-        """Voting on a post."""
-        try:
-            self.vote_on_blog_post()
-            self.redirect("/thanks?redirect=/blogs")
-        except myExceptions.VoteOnOwnPostNotAllowed:
-            self.redirect("/error?errorType=VoteOnOwnPostNotAllowed")
+        """Vote or comment, redirect to thanks-page if valid vote/comment."""
+        self.blog_comment_or_vote("/blogs")
 
     def get(self):
         """Retrieve all the latest blog-entries and render them to user."""
@@ -168,12 +188,9 @@ class BlogPost(Handler):
     """Show a single blog-entry."""
 
     def post(self, blog_id):
-        """Vote, redirect to thanks-page if valid vote."""
-        try:
-            self.vote_on_blog_post()
-            self.redirect("/thanks?redirect=/blogs/{}".format(blog_id))
-        except myExceptions.VoteOnOwnPostNotAllowed:
-            self.redirect("/error?errorType=VoteOnOwnPostNotAllowed")
+        """Vote or comment, redirect to thanks-page if valid vote/comment."""
+        self.blog_comment_or_vote("/blogs/{}".format(blog_id))
+
 
     def get(self, blog_id):  # noqa
         """Retrieve the blog-id from the url and show it."""

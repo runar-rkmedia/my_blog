@@ -18,7 +18,6 @@
 
             <div class="blog-votes">
                 <form method="post" class="inline">
-                    <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
                     <button
                         type="submit"
                         name="voteDirection"
@@ -69,5 +68,15 @@
 </div>
 <div class="blog-entry-body">
 <p class="blog-entry-body-p">{{ blog_entry.output_html_article() | safe }}</p>
+</div>
+<div class="blog-entry-comments">
+{% if user and single_post %}
+  <form class="row add-comment-form" method="post">
+    <label for="comment">Comment</label>
+    <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
+    <input class="eight columns" type="text" name="comment" id="comment">
+    <input class="three columns button-primary" type="submit" value="Post">
+  </form>
+{% endif %}
 </div>
 </div>
