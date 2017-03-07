@@ -22,11 +22,10 @@ from math import ceil
 import jinja2
 import webapp2
 import verify_signup
-from google.appengine.ext.db import BadValueError # noqa
+from google.appengine.ext.db import BadValueError  # noqa
 from hash_functions import make_secure_val, check_secure_val
 from Entities import BlogEntity, UserEntity, blog_key
 import myExceptions
-from time import strftime
 # import test_data
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -35,14 +34,14 @@ jinja_env = jinja2.Environment(
     autoescape=True
 )
 
+
 def _jinja2_filter_datetime(date, myformat='medium'):
     print(date)
     if myformat == 'medium':
-        timeformat='%b %d, %Y %H:%M'
+        timeformat = '%b %d, %Y %H:%M'
     return date.strftime(timeformat)
 
 jinja_env.filters['datetime'] = _jinja2_filter_datetime
-
 
 
 class Handler(webapp2.RequestHandler):
@@ -111,8 +110,10 @@ class Handler(webapp2.RequestHandler):
         self._render_text = blog_entry.article.replace('\n', '<br>')  # noqa
         kw['user_owns_post'] = (
             self.user and self.user.key().id() == blog_entry.created_by.key().id())
-        kw['user_upvoted'] = self.user and blog_entry.getVotesFromUser(self.user) == 'up'
-        kw['user_downvoted'] = self.user and blog_entry.getVotesFromUser(self.user) == 'down'
+        kw['user_upvoted'] = self.user and blog_entry.getVotesFromUser(
+            self.user) == 'up'
+        kw['user_downvoted'] = self.user and blog_entry.getVotesFromUser(
+            self.user) == 'down'
         return self.render_str("view_blog_entry.html", blog_entry=blog_entry, **kw)
 
     def render_page_buttons(self, pages, currentPage):
@@ -120,7 +121,6 @@ class Handler(webapp2.RequestHandler):
         return self.render_str("page-buttons.html",
                                pages=pages,
                                currentPage=currentPage)
-
 
     def blog_comment_or_vote(self, redirect):
         """Comment or vote on a blog_post."""
@@ -201,7 +201,6 @@ class BlogPost(Handler):
         """Vote or comment, redirect to thanks-page if valid vote/comment."""
         self.blog_comment_or_vote("/blogs/{}".format(blog_id))
 
-
     def get(self, blog_id):  # noqa
         """Retrieve the blog-id from the url and show it."""
         blog_entry = BlogEntity.get_by_id_str(blog_id)
@@ -261,6 +260,7 @@ class EditBlogPost(Handler):
             self.render('new_blog_post.html', title=title,
                         article=article, blog_entry=blog_entry, **kw)
         else:
+            print blog_entry
             self.redirect("/error?errorType=Not_valid_blog_id_or_wrong_user")
 
     def get(self):
@@ -288,10 +288,18 @@ class EditBlogPost(Handler):
             if (blog_entry and self.user and
                     self.user.key().id() == blog_entry.created_by.key().id()):
                 if title and article:
-                    blog_entry.title = title
-                    blog_entry.article = article
-                    blog_entry.put()
-                    self.redirect('/blogs/%s' % str(blog_entry.key().id()))
+                    try:
+                        blog_entry.edit_blog_entry(parent=blog_key(),
+                                                   created_by=self.user,
+                                                   title=title,
+                                                   article=article)
+                        self.redirect('/blogs/%s' % str(blog_entry.key().id()))
+                    except myExceptions.NotUnique:
+                        self.render_this(blog_entry=blog_entry,
+                                         title=title,
+                                         article=article,
+                                         error_notUnique=True)
+
                 else:
                     self.render_this(title=title, article=article,
                                      error_missing_fields=True)
