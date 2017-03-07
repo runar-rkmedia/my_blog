@@ -13,7 +13,7 @@
                     by
                     {{ blog_entry.created_by.username }}
                 </div>
-                <div class="blog-entry-created">{{blog_entry.created.strftime('%b %d, %Y')}}</div>
+                <div class="blog-entry-created">{{blog_entry.created|datetime}}</div>
             </div>
 
             <div class="blog-votes">
@@ -70,6 +70,20 @@
 <p class="blog-entry-body-p">{{ blog_entry.output_html_article() | safe }}</p>
 </div>
 <div class="blog-entry-comments">
+  <hr>
+  <h4>Comments</h4>
+  {% if blog_entry.get_comments().count() > 0 %}
+    {% for comment in blog_entry.get_comments() %}
+    <div class="row comment-item">
+      <div class="comment-item-header disabled">
+        {{comment.commentBy.username}} &ndash; {{ comment.created|datetime}}
+      </div>
+      <div class="comment--item-text"><blockquote>{{ comment.comment }}</blockquote></div>
+    </div>
+    {% endfor %}
+  {% else %}
+  <p>Be the first to leave a comment</p>
+  {% endif %}
 {% if user and single_post %}
   <form class="row add-comment-form" method="post">
     <label for="comment">Comment</label>

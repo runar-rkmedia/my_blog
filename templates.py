@@ -26,6 +26,7 @@ from google.appengine.ext.db import BadValueError # noqa
 from hash_functions import make_secure_val, check_secure_val
 from Entities import BlogEntity, UserEntity, blog_key
 import myExceptions
+from time import strftime
 # import test_data
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -33,6 +34,15 @@ jinja_env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(template_dir),
     autoescape=True
 )
+
+def _jinja2_filter_datetime(date, myformat='medium'):
+    print(date)
+    if myformat == 'medium':
+        timeformat='%b %d, %Y %H:%M'
+    return date.strftime(timeformat)
+
+jinja_env.filters['datetime'] = _jinja2_filter_datetime
+
 
 
 class Handler(webapp2.RequestHandler):

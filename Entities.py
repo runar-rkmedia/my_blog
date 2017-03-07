@@ -120,7 +120,7 @@ class CommentsEntity(db.Model):
 
     commentBy = db.ReferenceProperty(UserEntity, required=True)
     commentOn = db.ReferenceProperty(BlogEntity, required=True)
-    comment = db.StringProperty(required=True)
+    comment = db.TextProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now_add=True)
 
