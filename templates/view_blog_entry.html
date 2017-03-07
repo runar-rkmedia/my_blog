@@ -69,37 +69,38 @@
     <div class="blog-entry-body">
         <p class="blog-entry-body-p">{{ blog_entry.output_html_article() | safe }}</p>
     </div>
-    {% if single_post  %}
-    <div class="blog-entry-comments">
-        <hr>
-        <h4>Comments</h4>
-        {% if blog_entry.get_comments().count() > 0 %}
-            {% for comment in blog_entry.get_comments().order('-created') %}
-                <div class="row comment-item">
-                    <div class="comment-item-header disabled">
-                        {{comment.commentBy.username}}
-                        &ndash;
-                        {{ comment.created|datetime}}
+    {% if single_post %}
+        <div class="blog-entry-comments">
+            <hr>
+            <h4>Comments</h4>
+            {% if blog_entry.get_comments().count() > 0 %}
+                {% for comment in blog_entry.get_comments().order('-created') %}
+                    <div class="row comment-item">
+                        <div class="comment-item-header disabled">
+                            {{comment.commentBy.username}}
+                            &ndash;
+                            {{ comment.created|datetime}}
+                        </div>
+                        <div class="comment--item-text">
+                            <blockquote>{{ comment.comment }}</blockquote>
+                        </div>
+                        {% if user and user.key().id() == comment.commentBy.key().id() %}
+                            <!-- Placeholder for editing comment -->
+                        {% endif %}
                     </div>
-                    <div class="comment--item-text">
-                        <blockquote>{{ comment.comment }}</blockquote>
-                    </div>
-                {% if user and user.key().id() == comment.commentBy.key().id() %}
-                    <!-- Placeholder for editing comment -->
-                {% endif %}
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>Be the first to leave a comment</p>
-        {% endif %}
-        {% if user %}
-            <form class="row add-comment-form" method="post">
-                <label for="comment">Comment</label>
-                <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
-                <input class="eight columns" type="text" name="comment" id="comment">
-                <input class="three columns button-primary" type="submit" value="Post">
-            </form>
-        {% endif %}
-    </div>
+                {% endfor %}
+            {% else %}
+                <p>Be the first to leave a comment</p>
+            {% endif %}
+            {% if user %}
+                <form class="row add-comment-form" method="post">
+                    <label for="comment-input">Comment</label>
+                    <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
+                    <textarea name="comment" class="eight columns comment-input" id="comment-input" placeholder="Comment here, html not allowed.">{{ article }}</textarea>
+                    <input class="three columns button-primary" type="submit" value="Post">
+                </form>
+            {% endif %}
+        </div>
     {% endif %}
 </div>
+<h1>dsfdsa</h1>
