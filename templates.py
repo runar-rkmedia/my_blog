@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """myBlog, an assignment on Udacity (Full Stack)."""
 
 # Copyright 2016 Google Inc.
@@ -13,9 +15,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import os
 from math import ceil
@@ -40,6 +39,7 @@ def _jinja2_filter_datetime(date, myformat='medium'):
     if myformat == 'medium':
         timeformat = '%b %d, %Y %H:%M'
     return date.strftime(timeformat)
+
 
 jinja_env.filters['datetime'] = _jinja2_filter_datetime
 
@@ -108,13 +108,14 @@ class Handler(webapp2.RequestHandler):
     def render_blog_article(self, blog_entry, **kw):
         """Render an html-element for a single blog-entry."""
         self._render_text = blog_entry.article.replace('\n', '<br>')  # noqa
-        kw['user_owns_post'] = (
-            self.user and self.user.key().id() == blog_entry.created_by.key().id())
+        kw['user_owns_post'] = (self.user and self.user.key().id() ==
+                                blog_entry.created_by.key().id())
         kw['user_upvoted'] = self.user and blog_entry.getVotesFromUser(
             self.user) == 'up'
         kw['user_downvoted'] = self.user and blog_entry.getVotesFromUser(
             self.user) == 'down'
-        return self.render_str("view_blog_entry.html", blog_entry=blog_entry, **kw)
+        return self.render_str("view_blog_entry.html",
+                               blog_entry=blog_entry, **kw)
 
     def render_page_buttons(self, pages, currentPage):
         """Render an html-element for a page-navigation."""
@@ -137,8 +138,8 @@ class Handler(webapp2.RequestHandler):
             except myExceptions.VoteOnOwnPostNotAllowed:
                 self.redirect("/error?errorType=VoteOnOwnPostNotAllowed")
             except BadValueError:
-                 # TODO: Create for this in error.html
-                 # TODO: Create error-method which does POST instead of GET.
+                #  TODO: Create for this in error.html
+                #  TODO: Create error-method which does POST instead of GET.
                 self.redirect("/error?errorType=BadValueError")
         elif comment and blog_entry:
             if len(comment) >= 1:
@@ -187,11 +188,13 @@ class Blogs(Handler):
         offset = (page_to_show - 1) * limit
         totalArticles = BlogEntity.all().count(1000)
         totalPages = int(ceil(float(totalArticles) / limit))
-        articles = BlogEntity.all().order('-created').fetch(limit=limit, offset=offset)
+        articles = BlogEntity.all().order(
+            '-created').fetch(limit=limit, offset=offset)
 
         self.render("blogs.html", articles=articles,
                     parser=self.render_blog_article,
-                    pageButtons=self.render_page_buttons(totalPages, page_to_show))
+                    pageButtons=self.render_page_buttons(
+                        totalPages, page_to_show))
 
 
 class BlogPost(Handler):
@@ -275,7 +278,7 @@ class EditBlogPost(Handler):
             self.render('/error?error=Not_valid_blog_id_or_wrong_user')
 
     def post(self):
-        """Create/edit a blog-entry if logged in and form filled out correcly."""
+        """Create/edit a blog-entry if logged in and form filled correcly."""
         if not self.user:
             self.redirect('/login')
         else:
