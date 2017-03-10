@@ -185,6 +185,10 @@ footer {
 .thanks {
     text-align: center;
 }
+input.button-dangerous {
+  color: white;
+  background-color: red;
+}
 @media (max-width: 767px) {
   .container{
     padding: 10px 15px;

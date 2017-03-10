@@ -23,7 +23,13 @@
             <label for="article-input" class="form-label">Article</label>
             <textarea name="article" class="u-full-width article-input" id="article-input" placeholder="Enter your article here. HTML-tags are allowed.">{{ article }}</textarea>
         </div>
+        {% if verify_deletion %}
+        <label><input type="checkbox" name="verify_deletion_checkbox"><span class="label-body error">Check this to verify that you really want to delete this post</span></label>
+        {% endif %}
         <input class="button-primary" type="submit" value="submit">
+        {% if blog_entry %}
+        <input class="button-dangerous" name="delete" type="submit" value="Delete post">
+        {% endif %}
     </form>
 
     <hr>

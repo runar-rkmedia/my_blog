@@ -35,7 +35,6 @@ jinja_env = jinja2.Environment(
 
 
 def _jinja2_filter_datetime(date, myformat='medium'):
-    print(date)
     if myformat == 'medium':
         timeformat = '%b %d, %Y %H:%M'
     return date.strftime(timeformat)
@@ -129,7 +128,6 @@ class Handler(webapp2.RequestHandler):
         comment = self.request.get("comment")
         blog_id = self.request.get("blog_id")
         blog_entry = BlogEntity.get_by_id_str(blog_id)
-        print comment, blog_entry
         if voteType and blog_entry:
             try:
                 blog_entry = BlogEntity.get_by_id_str(blog_id)
@@ -263,7 +261,6 @@ class EditBlogPost(Handler):
             self.render('new_blog_post.html', title=title,
                         article=article, blog_entry=blog_entry, **kw)
         else:
-            print blog_entry
             self.redirect("/error?errorType=Not_valid_blog_id_or_wrong_user")
 
     def get(self):
@@ -279,15 +276,26 @@ class EditBlogPost(Handler):
 
     def post(self):
         """Create/edit a blog-entry if logged in and form filled correcly."""
+        title = self.request.get("title").strip()
+        article = self.request.get("article")
+
+        # If user is editing a post, we should get a blog_id
+        blog_id = self.request.get("blog_id")
+        blog_entry = BlogEntity.get_by_id_str(blog_id)
+        deletePost = bool(self.request.get("delete"))
+        deletion_verified = bool(self.request.get("verify_deletion_checkbox"))
         if not self.user:
             self.redirect('/login')
+        elif deletePost:
+            if deletion_verified:
+                blog_entry.delete()
+                self.redirect('/blogs')
+            else:
+                self.render_this(blog_entry=blog_entry,
+                                 title=title,
+                                 article=article,
+                                 verify_deletion=True)
         else:
-            title = self.request.get("title").strip()
-            article = self.request.get("article")
-
-            # If user is editing a post, we should get a blog_id
-            blog_id = self.request.get("blog_id")
-            blog_entry = BlogEntity.get_by_id_str(blog_id)
             if (blog_entry and self.user and
                     self.user.key().id() == blog_entry.created_by.key().id()):
                 if title and article:
