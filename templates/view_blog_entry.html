@@ -83,13 +83,13 @@
                             {{comment.commentBy.username}}
                             &ndash;
                             {{ comment.created|datetime}}
+                            {% if user and user.key().id() == comment.commentBy.key().id() %}
+                                <button type="button" name="button" onclick="edit_comment({{ loop.index0 }}, '{{ comment.comment}}','{{ comment.key().id() }}')">edit>
+                            {% endif %}
                         </div>
-                        <div class="comment--item-text">
+                        <div class="comment-item-text" id="comment-item-text-{{ loop.index0 }}">
                             <blockquote>{{ comment.comment }}</blockquote>
                         </div>
-                        {% if user and user.key().id() == comment.commentBy.key().id() %}
-                            <!-- Placeholder for editing comment -->
-                        {% endif %}
                     </div>
                 {% endfor %}
             {% else %}
@@ -99,10 +99,25 @@
                 <form class="row add-comment-form" method="post">
                     <label for="comment-input">Comment</label>
                     <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
-                    <textarea name="comment" class="eight columns comment-input" id="comment-input" placeholder="Comment here, html not allowed.">{{ article }}</textarea>
+                    <textarea name="comment" class="eight columns comment-input" id="comment-input" placeholder="Comment here, html not allowed."></textarea>
                     <input class="three columns button-primary" type="submit" value="Post">
                 </form>
             {% endif %}
         </div>
     {% endif %}
 </div>
+<script type="text/javascript">
+function edit_comment(comment_html_id, comment_text, comment_id){
+  var comment_body = document.getElementById("comment-item-text-" + comment_html_id);
+
+  comment_body.innerHTML = `
+  <form class="row add-comment-form" method="post">
+      <label for="comment-input">Comment</label>
+      <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
+      <input type="hidden" name="comment_id" value="` + comment_id +`">
+      <textarea name="comment" class="eight columns comment-input" id="comment-input">` + comment_text + `</textarea>
+      <input class="three columns button-primary" type="submit" value="Post">
+  </form>
+  `
+}
+</script>

@@ -153,6 +153,12 @@ class CommentsEntity(db.Model):
     last_modified = db.DateTimeProperty(auto_now_add=True)
 
     @classmethod
+    def get_by_id_str(cls, comment_id):
+        """Return a blog_entry from comment_id(str) if valid."""
+        if comment_id.isdigit():
+            return CommentsEntity.get_by_id(int(comment_id))
+
+    @classmethod
     def comment_on_post(cls, commentBy, commentOn, comment):
         """Create a comment."""
         comment_entry = CommentsEntity(

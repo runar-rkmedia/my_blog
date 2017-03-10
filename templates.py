@@ -23,7 +23,7 @@ import webapp2
 import verify_signup
 from google.appengine.ext.db import BadValueError  # noqa
 from hash_functions import make_secure_val, check_secure_val
-from Entities import BlogEntity, UserEntity, blog_key
+from Entities import CommentsEntity, BlogEntity, UserEntity, blog_key
 import myExceptions
 # import test_data
 
@@ -127,6 +127,7 @@ class Handler(webapp2.RequestHandler):
         voteType = self.request.get("voteDirection")
         comment = self.request.get("comment")
         blog_id = self.request.get("blog_id")
+        comment_id = self.request.get("comment_id")
         blog_entry = BlogEntity.get_by_id_str(blog_id)
         if voteType and blog_entry:
             try:
@@ -141,8 +142,20 @@ class Handler(webapp2.RequestHandler):
                 self.redirect("/error?errorType=BadValueError")
         elif comment and blog_entry:
             if len(comment) >= 1:
-                blog_entry.add_comment(commentBy=self.user, comment=comment)
-                self.render("/thanks.html", redirect=redirect)
+                if comment_id:
+                    comment_entry = CommentsEntity.get_by_id_str(comment_id)
+                    if (comment_entry and
+                            comment_entry.commentOn.key().id() == blog_entry.key().id()):
+                        if comment_entry.commentBy.key().id() == self.user.key().id():
+                            comment_entry.comment = comment
+                            comment_entry.put()
+                            self.render("/thanks.html", redirect=redirect)
+                    else:
+                        self.redirect("/error?errorType=BadValueError")
+                else:
+                    blog_entry.add_comment(
+                        commentBy=self.user, comment=comment)
+                    self.render("/thanks.html", redirect=redirect)
             else:
                 pass
         else:
