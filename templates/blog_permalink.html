@@ -1,5 +1,5 @@
 <!DOCTYPE html>
 {% extends "base.html" %}
 {% block content %}
-        {{ parser(article, user=user, single_post=True) | safe}}
+    {{ parser(article, user=user, single_post=True) | safe}}
 {% endblock %}

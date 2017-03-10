@@ -110,8 +110,6 @@ class BlogEntity(db.Model):
             raise myExceptions.EditOthersPosts(
                 'You do not have access to delete this post.')
 
-
-
     def getVotes(self):
         """Return all votes on this post."""
         return VotesEntity.get_votes_on_post(self)

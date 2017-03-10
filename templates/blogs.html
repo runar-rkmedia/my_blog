@@ -2,19 +2,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-  <h2>Blog posts</h2>
-</div>
-<div class="row">
-  <div class="one-half u-pull-right">{{ pageButtons | safe}}</div>
-</div>
-<div class="row">
-  {% for article in articles %}
-      {{ parser(article, user=user) | safe}}
-      <div class="blog-entry-spacer"></div>
-  {% endfor %}
-</div>
-<div class="row">
-  <div class="one-half u-pull-right">{{ pageButtons | safe}}</div>
-</div>
+    <div class="row">
+        <h2>Blog posts</h2>
+    </div>
+    <div class="row">
+        <div class="one-half u-pull-right">{{ pageButtons | safe}}</div>
+    </div>
+    <div class="row">
+        {% for article in articles %}
+            {{ parser(article, user=user) | safe}}
+            <div class="blog-entry-spacer"></div>
+        {% endfor %}
+    </div>
+    <div class="row">
+        <div class="one-half u-pull-right">{{ pageButtons | safe}}</div>
+    </div>
 {% endblock %}

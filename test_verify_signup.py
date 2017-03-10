@@ -99,7 +99,6 @@ class BlogEntityTest(DatastoreTestCase):
         )
 
     def test_edit_blog_entry_with_existing_title(self):
-        # TODO: Fix these docstrings
         """edit_blog_post should fail if using a title from different post."""
         james = UserEntity.register(username='james', password='pass')
 
@@ -124,7 +123,7 @@ class BlogEntityTest(DatastoreTestCase):
         )
 
     def test_delete_post_wrong_user(self):
-        """delete_post should raise error if wrong user attempts to delete it."""
+        """delete_post should raise error if wrong user attempts to del it."""
         james = UserEntity.register(username='james', password='pass')
         kimmy = UserEntity.register(username='kimmy', password='pass')
 
@@ -139,7 +138,7 @@ class BlogEntityTest(DatastoreTestCase):
             a.delete_post, kimmy)
 
     def test_delete_post(self):
-        """delete_post should delete the post and all its comments and votes."""
+        """delete_post should delete the post and its comments and votes."""
         james = UserEntity.register(username='james', password='pass')
         kimmy = UserEntity.register(username='kimmy', password='pass')
         dane = UserEntity.register(username='dane', password='pass')
@@ -176,8 +175,8 @@ class BlogEntityTest(DatastoreTestCase):
         for vote in votes:
             self.assertNotEqual(
                 vote.voteOn.title,
-                 'a',
-                 msg="Votes of post 'a' should be deleted")
+                'a',
+                msg="Votes of post 'a' should be deleted")
         comments = CommentsEntity.all()
         for comment in comments:
             self.assertNotEqual(
@@ -226,7 +225,7 @@ class BlogEntityTest(DatastoreTestCase):
         self.assertEqual(a.article, '123', msg=None)
 
     def test_blog_get_by(self):
-        """get_by_id_str and by_title should the correct BlogEntity if valid input"""
+        """get_by_id_str and by_title should return the correct BlogEntity"""
         james = UserEntity.register(username='james', password='pass')
 
         a = BlogEntity.create_blog_entry(
@@ -240,7 +239,7 @@ class BlogEntityTest(DatastoreTestCase):
         self.assertEqual(
             BlogEntity.get_by_id_str(a_id).key().id(),
             a.key().id(),
-            msg="'by_title' should return the 'a'-blog_entry for title 'a title'")
+            msg="'by_title' should return the 'a'-blog_entry")
 
         self.assertEqual(
             BlogEntity.by_title('a title').key().id(),
@@ -329,37 +328,51 @@ class BlogEntityTest(DatastoreTestCase):
         a.vote(voteBy=john, voteType='up')
         self.assertEqual(
             a.getVotesFromUser(
-                john), None, msg="'Voting 'up' twice should remove the vote")
+                john),
+            None,
+            msg="'Voting 'up' twice should remove the vote")
 
         self.assertEqual(
             a.getVotesFromUser(
-                jimbo), 'down', msg="'voting 'down' should set the vote to 'down'")
+                jimbo),
+            'down',
+            msg="'voting 'down' should set the vote to 'down'")
 
         a.vote(voteBy=jimbo, voteType='down')
         self.assertEqual(
             a.getVotesFromUser(
-                jimbo), None, msg="'Voting 'down' twice should remove the vote")
+                jimbo),
+            None,
+            msg="'Voting 'down' twice should remove the vote")
 
 
 class UserEntityTest(DatastoreTestCase):
     """Test for User Account Entity."""
 
     def test_UserEntity_register(self):
-        """UserEntity.register should create the useraccount, with correct data."""
+        """UserEntity.register should create the account, with correct data."""
         UserEntity.register(username='Jamie', password='password123').put()
         user = UserEntity.gql("WHERE username = 'Jamie'")[0]
         user2 = UserEntity.by_name('Jamie')
         user3 = UserEntity.by_name('Kelly')
         self.assertEqual(user.username, 'Jamie',
                          'gql-query should return a user.')
-        self.assertEqual(user2.username, 'Jamie',
-                         'UserEntity.by_name should return a user for existin user..')
-        self.assertEqual(user3, None,
-                         'UserEntity.by_name should return None if the user does not exist')
-        self.assertNotEqual(user.password, 'password123',
-                            'userpassword should be hashed, not stored as plain text')
-        self.assertEqual(len(user.password), 60,
-                         'userpassword should be hashed to 60 characters')
+        self.assertEqual(
+            user2.username,
+            'Jamie',
+            'UserEntity.by_name should return a user for username.')
+        self.assertEqual(
+            user3,
+            None,
+            'UserEntity.by_name should return None if the user does not exist')
+        self.assertNotEqual(
+            user.password,
+            'password123',
+            'userpassword should be hashed, not stored as plain text')
+        self.assertEqual(
+            len(user.password),
+            60,
+            'userpassword should be hashed to 60 characters')
 
     def test_UserEntity_register_same_username(self):
         """
@@ -379,16 +392,16 @@ class UsernameTest(unittest.TestCase):
     """Testing username."""
 
     def test_valid_username_length_short(self):
-        """valid_username should return false with input of less than 3 characters."""
+        """valid_username should return false with input below 3 char."""
         self.assertFalse(valid_username('jn'))
 
     def test_valid_username_length_ok(self):
-        """valid_username should return True with input of between 3 and 20 characters."""
+        """valid_username should return True with input whitin 3-20 char."""
         self.assertTrue(valid_username('jon'))
         self.assertTrue(valid_username('abcdefghijklmnopqrst'))
 
     def test_valid_username_length_long(self):
-        """valid_username should return False with input of more than 20 characters."""
+        """valid_username should return False with input over 20 chars."""
         self.assertFalse(valid_username('abcdefghijklmnopqrstu'))
 
     def test_valid_username_non_valid_characters(self):
@@ -409,15 +422,15 @@ class PasswordTest(unittest.TestCase):
     """Testing password."""
 
     def test_valid_password_length_short(self):
-        """valid_password should return false with input of less than 3 characters."""
+        """valid_password should return false with input of below 3 chars."""
         self.assertFalse(valid_password('jn'))
 
     def test_valid_password_length_ok(self):
-        """valid_password should return True with input of between 3 and 20 characters."""
+        """valid_password should return True with input whitin 3-20 chars."""
         self.assertTrue(valid_password('jon'))
 
     def test_valid_password_length_long(self):
-        """valid_password should return False with input of more than 20 characters."""
+        """valid_password should return False with input over 20 chars."""
         self.assertFalse(valid_password('abcdefghijklmnopqrstu'))
 
     def test_valid_valid_characters(self):
@@ -428,12 +441,12 @@ class PasswordTest(unittest.TestCase):
         self.assertTrue(valid_password('john-doe'))
 
     def test_verify_passwords_matches_true(self):
-        """verify_passwords_matches should return true if passowords matches."""
+        """verify_passwords_matches should return true if passwords matches."""
         self.assertTrue(verify_passwords_matches(
             'password123', 'password123'))
 
     def test_verify_passwords_matches_false(self):
-        """verify_passwords_matches should return false if passowords doesn't match."""
+        """verify_passwords_matches should return false if passwordmismatch."""
         self.assertFalse(verify_passwords_matches(
             'password123', 'password12'))
 
