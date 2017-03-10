@@ -1,8 +1,8 @@
 """Enities used in myBlog."""
 
+import datetime
 from google.appengine.ext import db  # noqa
 from lib.pybcrypt import bcrypt  # This is slow, one should use regular bcrypt.
-import datetime
 import myExceptions
 
 
@@ -95,7 +95,22 @@ class BlogEntity(db.Model):
             self.put()
             return self
         else:
-            raise myExceptions.EditOthersPosts('You do not have access to edit this post.')
+            raise myExceptions.EditOthersPosts(
+                'You do not have access to edit this post.')
+
+    def delete_post(self, user):
+        """Delete this post, and all comments and votes related to it."""
+        if user.key().id() == self.created_by.key().id():
+            blog_entry_votes = VotesEntity.all().filter('voteOn = ', self)
+            blog_entry_comments = CommentsEntity.all().filter('commentOn = ', self)
+            db.delete(blog_entry_votes)
+            db.delete(blog_entry_comments)
+            db.delete(self)
+        else:
+            raise myExceptions.EditOthersPosts(
+                'You do not have access to delete this post.')
+
+
 
     def getVotes(self):
         """Return all votes on this post."""
@@ -103,7 +118,8 @@ class BlogEntity(db.Model):
 
     def vote(self, voteBy, voteType):
         """Vote on this blog."""
-        return VotesEntity.vote_on_blog(voteOn=self, voteBy=voteBy, voteType=voteType)
+        return VotesEntity.vote_on_blog(
+            voteOn=self, voteBy=voteBy, voteType=voteType)
 
     def getVotesFromUser(self, user):
         """Return voteType('up', or 'down') on this post by this user."""
@@ -122,7 +138,6 @@ class BlogEntity(db.Model):
         """Return all comments on this post."""
         comments = CommentsEntity.get_comments_on_post(commentOn=self)
         return comments
-
 
 
 def blog_key(name='default'):
@@ -149,14 +164,12 @@ class CommentsEntity(db.Model):
         comment_entry.put()
         return comment_entry
 
-
     @classmethod
     def get_comments_on_post(cls, commentOn):
         """Return comments for the blog_post."""
         comments = CommentsEntity.all().filter(
             'commentOn = ', commentOn)
         return comments
-
 
 
 class VotesEntity(db.Model):

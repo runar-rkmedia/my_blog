@@ -288,7 +288,7 @@ class EditBlogPost(Handler):
             self.redirect('/login')
         elif deletePost:
             if deletion_verified:
-                blog_entry.delete()
+                blog_entry.delete_post(self.user)
                 self.redirect('/blogs')
             else:
                 self.render_this(blog_entry=blog_entry,

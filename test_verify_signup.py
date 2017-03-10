@@ -99,7 +99,8 @@ class BlogEntityTest(DatastoreTestCase):
         )
 
     def test_edit_blog_entry_with_existing_title(self):
-        """edit_blog_post should fail if using a title from a different post."""
+        # TODO: Fix these docstrings
+        """edit_blog_post should fail if using a title from different post."""
         james = UserEntity.register(username='james', password='pass')
 
         a = BlogEntity.create_blog_entry(
@@ -122,8 +123,77 @@ class BlogEntityTest(DatastoreTestCase):
             created_by=james,
         )
 
+    def test_delete_post_wrong_user(self):
+        """delete_post should raise error if wrong user attempts to delete it."""
+        james = UserEntity.register(username='james', password='pass')
+        kimmy = UserEntity.register(username='kimmy', password='pass')
+
+        a = BlogEntity.create_blog_entry(
+            parent=blog_key(),
+            title='a',
+            article='content',
+            created_by=james)
+
+        self.assertRaises(
+            myExceptions.EditOthersPosts,
+            a.delete_post, kimmy)
+
+    def test_delete_post(self):
+        """delete_post should delete the post and all its comments and votes."""
+        james = UserEntity.register(username='james', password='pass')
+        kimmy = UserEntity.register(username='kimmy', password='pass')
+        dane = UserEntity.register(username='dane', password='pass')
+        joe = UserEntity.register(username='joe', password='pass')
+
+        a = BlogEntity.create_blog_entry(
+            parent=blog_key(),
+            title='a',
+            article='content',
+            created_by=james)
+
+        b = BlogEntity.create_blog_entry(
+            parent=blog_key(),
+            title='b',
+            article='content',
+            created_by=james)
+
+        a.vote(voteBy=kimmy, voteType='up')
+        a.vote(voteBy=dane, voteType='up')
+        a.vote(voteBy=joe, voteType='down')
+        b.vote(voteBy=kimmy, voteType='up')
+        b.vote(voteBy=dane, voteType='up')
+        b.vote(voteBy=joe, voteType='down')
+
+        a.add_comment(commentBy=kimmy, comment='abc')
+        a.add_comment(commentBy=dane, comment='abc')
+        a.add_comment(commentBy=joe, comment='123')
+        b.add_comment(commentBy=kimmy, comment='abc')
+        b.add_comment(commentBy=dane, comment='abc')
+        b.add_comment(commentBy=joe, comment='123')
+
+        a.delete_post(james)
+        votes = VotesEntity.all()
+        for vote in votes:
+            self.assertNotEqual(
+                vote.voteOn.title,
+                 'a',
+                 msg="Votes of post 'a' should be deleted")
+        comments = CommentsEntity.all()
+        for comment in comments:
+            self.assertNotEqual(
+                comment.commentOn.title,
+                'a',
+                msg="Comments of post 'a' should be deleted")
+
+        bloe_entries = BlogEntity.all()
+        for blog_entity in bloe_entries:
+            self.assertNotEqual(
+                blog_entity.title,
+                'a',
+                msg="Post 'a' should be deleted")
+
     def test_edit_blog_entry_wrong_user(self):
-        """edit_blog_post should fail if using a title from a different post."""
+        """edit_blog_post should fail if using a title from different post."""
         james = UserEntity.register(username='james', password='pass')
         jimmy = UserEntity.register(username='jimmy', password='pass')
 
@@ -142,7 +212,7 @@ class BlogEntityTest(DatastoreTestCase):
         )
 
     def test_edit_blog_entry_check_data(self):
-        """edit_blog_post should fail if using a title from a different post."""
+        """edit_blog_post should fail if using a title from different post."""
         james = UserEntity.register(username='james', password='pass')
 
         a = BlogEntity.create_blog_entry(
@@ -249,8 +319,8 @@ class BlogEntityTest(DatastoreTestCase):
 
         self.assertEqual(
             a.getVotes(),
-            {'up':3, 'down':1},
-            msg="'getvotes' should return a dict with keyword 'up' and 'down, here with values 3 and 1'") # noqa
+            {'up': 3, 'down': 1},
+            msg="'getvotes' should return a dict with keyword 'up' and 'down, here with values 3 and 1'")  # noqa
 
         self.assertEqual(
             a.getVotesFromUser(
@@ -269,7 +339,6 @@ class BlogEntityTest(DatastoreTestCase):
         self.assertEqual(
             a.getVotesFromUser(
                 jimbo), None, msg="'Voting 'down' twice should remove the vote")
-
 
 
 class UserEntityTest(DatastoreTestCase):
