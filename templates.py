@@ -18,6 +18,7 @@
 
 import os
 from math import ceil
+import datetime
 import jinja2
 import webapp2
 import verify_signup
@@ -62,15 +63,21 @@ class Handler(webapp2.RequestHandler):
         kw['user'] = UserEntity.by_name(username)
         self.write(self.render_str(template, **kw))
 
-    def set_cookie(self, name, value, extra=""):
+    def set_cookie(self, name, value, expiration=None):
         """Create a cookie."""
-        self.response.headers.add_header(
-            'Set-Cookie', '{}={}; {}'.format(name, value, extra))
+        expireTime = None
+        if expiration is not None:
+            expireTime = (datetime.datetime.now() +
+                          datetime.timedelta(days=expiration))
+        self.response.set_cookie(name,
+                                 value,
+                                 expires=expireTime,
+                                 path='/')
 
-    def set_secure_cookie(self, name, value, extra=""):
+    def set_secure_cookie(self, name, value, expires=None):
         """Create a secure cookie in the browser."""
         value = make_secure_val(str(value))
-        self.set_cookie(name, value, extra)
+        self.set_cookie(name, value, expires)
 
     def read_cookie(self, name):
         """Read a cookie from the browser."""
@@ -85,13 +92,12 @@ class Handler(webapp2.RequestHandler):
         """Delete a cookie from the browser."""
         self.set_cookie(name,
                         'deleted',
-                        'path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
-                        )  # noqa
+                        -999)
 
-    def perform_login(self, username):
+    def perform_login(self, username, expires=None):
         """Set the user-cookie in the browser and redirect."""
         new_cookie_val = make_secure_val(str(username))
-        self.set_cookie('user', new_cookie_val)
+        self.set_secure_cookie('user', username, expires)
 
         self.redirect("/thanks?redirect=/welcome")
 
@@ -187,7 +193,10 @@ class Welcome(Handler):
 
     def get(self):
         """Show the welcome-message with the username."""
-        self.render("/welcome.html", username=self.user.username)
+        if self.user:
+            self.render("/welcome.html", username=self.user.username)
+        else:
+            self.redirect('/error')
 
 
 class Thanks(Handler):
@@ -361,15 +370,22 @@ class Login(Handler):
         """Log in user(set cookie) if user and password matches."""
         username = self.request.get("username")
         password = self.request.get("password")
+        remember_me = self.request.get("remember_me")
+        print 'sdafsdfasdcfwetr1354', remember_me, '   p  '
 
         valid_login = UserEntity.check_username_password(username, password)
 
         if valid_login:
-            self.perform_login(username)
+            expires = None
+            if remember_me:
+                print 'sdafsdfasdcfwetr1354'
+                expires = 30
+            self.perform_login(username, expires)
         else:
             self.render("login.html",
                         error_invalid_login=True,
                         username=username,
+                        remember_me=remember_me,
                         )  # noqa
 
 
