@@ -65,6 +65,113 @@ class DatastoreTestCase(unittest.TestCase):
         self.testbed.deactivate()
 
 
+class CommentEnityTest(DatastoreTestCase):
+    """Test for comment entries."""
+
+    def test_comment_on_post(self):
+        """comment_on_post should return a CommentEntity."""
+        james = UserEntity.register(username='james', password='pass')
+
+        a = BlogEntity.create_blog_entry(
+            parent=blog_key(),
+            title='a',
+            article='content',
+            created_by=james)
+
+        self.assertEqual(
+            type(CommentsEntity.comment_on_post(
+                commentBy=james,
+                commentOn=a,
+                comment='abc')),
+            CommentsEntity)
+
+    def test_get_by_id_str(self):
+        """get_by_id_str should return the correct comment."""
+        james = UserEntity.register(username='james', password='pass')
+
+        a = BlogEntity.create_blog_entry(
+            parent=blog_key(),
+            title='a',
+            article='content',
+            created_by=james)
+
+        c = CommentsEntity.comment_on_post(
+            commentBy=james,
+            commentOn=a,
+            comment='abc')
+
+        comment_id = str(c.key().id())
+        self.assertEqual(type(CommentsEntity.get_by_id_str(comment_id)),
+                         CommentsEntity, msg=None)
+
+    def test_get_comments_on_post(self):
+        """get_comments_on_post should return all comments on post."""
+        james = UserEntity.register(username='james', password='pass')
+
+        a = BlogEntity.create_blog_entry(
+            parent=blog_key(),
+            title='a',
+            article='content',
+            created_by=james)
+
+        c1 = CommentsEntity.comment_on_post(
+            commentBy=james,
+            commentOn=a,
+            comment='abc')
+
+        c2 = CommentsEntity.comment_on_post(
+            commentBy=james,
+            commentOn=a,
+            comment='123')
+
+        comments = CommentsEntity.get_comments_on_post(a)
+        self.assertEqual(comments.count(), 2, msg='should return 2 comments')
+        self.assertEqual(
+            comments[0].comment,
+            c1.comment,
+            msg='should match first comment')
+        self.assertEqual(
+            comments[1].comment,
+            c2.comment,
+            msg='should match first comment')
+
+    def test_verify_comment(self):
+        """Verify that the comment is valid."""
+        self.assertTrue(
+            CommentsEntity.verify_comment('abc'),
+            'should return true for okey output')
+        self.assertFalse(
+            CommentsEntity.verify_comment('ab'),
+            'should return false for too short output')
+
+    def test_edit_comment(self):
+        """edit_comment should return a comment with corrected text."""
+        james = UserEntity.register(username='james', password='pass')
+        jane = UserEntity.register(username='jane', password='pass')
+
+        a = BlogEntity.create_blog_entry(
+            parent=blog_key(),
+            title='a',
+            article='content',
+            created_by=james)
+
+        c = CommentsEntity.comment_on_post(
+            commentBy=james,
+            commentOn=a,
+            comment='abc')
+
+        new_comment = '123'
+        self.assertRaises(
+            myExceptions.EditOthersComments,
+            c.edit_comment, comment=new_comment, commentBy=jane
+        )
+
+        self.assertEquals(
+            c.edit_comment(comment=new_comment, commentBy=james).comment,
+            new_comment
+        )
+
+
 class BlogEntityTest(DatastoreTestCase):
     """Test for blog entries."""
 
