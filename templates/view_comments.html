@@ -1,0 +1,38 @@
+<div class="blog-entry-comments">
+    <hr>
+    <h4>Comments</h4>
+    {% if blog_entry.get_comments().count() > 0 %}
+        {% for comment in blog_entry.get_comments().order('-created') %}
+            <div class="row comment-item">
+                <div class="comment-item-header">
+                    {{comment.commentBy.username}}
+                    &ndash;
+                    {{ comment.created|datetime}}
+                    {% if comment.created | datetime != comment.last_modified | datetime %}
+                        &ndash;
+                        <span class="blog-entry-last-modified">Modified
+                            {{ comment.last_modified|datetime}}</span>
+                    {% endif %}
+                    {% if user and user.key().id() == comment.commentBy.key().id() %}
+                        &ndash;
+                        <a href="javascript:;" onclick="edit_comment({{ loop.index0 }}, '{{ comment.comment}}','{{ comment.key().id() }}')">Edit</a>
+                    {% endif %}
+                </div>
+                <div class="comment-id-body" id="comment-id-body-{{ loop.index0 }}">
+                    <blockquote id="comment-text-{{ loop.index0 }}">{{ comment.comment }}</blockquote>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Be the first to leave a comment</p>
+    {% endif %}
+    {% if user %}
+        <form class="row add-comment-form" method="post">
+            <label for="comment-input">Comment</label>
+            <input type="hidden" name="blog_id" value="{{ blog_entry.key().id() }}">
+            <textarea name="comment" class="eight columns comment-input" id="comment-input" placeholder="Comment here, html not allowed."></textarea>
+            <input class="three columns button-primary" type="submit" value="Post">
+        </form>
+    {% endif %}
+</div>
+<script type="text/javascript" src="/js/comments.js"></script>
