@@ -122,13 +122,41 @@ class Handler(webapp2.RequestHandler):
                                pages=pages,
                                currentPage=currentPage)
 
+    def blog_comment(self,
+                     comment,
+                     blog_entry,
+                     comment_id,
+                     delete_comment,
+                     redirect):
+        """Handle blog comments."""
+
+        comment_entry = CommentsEntity.get_by_id_str(comment_id)
+
+        if comment_entry and blog_entry:
+            if comment_entry.commentOn.key().id() == blog_entry.key().id():
+                if comment_entry.commentBy.key().id() == self.user.key().id():
+                    if delete_comment:
+                        # Delete comment
+                        comment_entry.delete()
+                    else:
+                        # Edit comment
+                        comment_entry.comment = comment
+                        comment_entry.put()
+                    self.render("/thanks.html", redirect=redirect)
+        elif blog_entry:
+            # New comment
+            blog_entry.add_comment(
+                commentBy=self.user, comment=comment)
+            self.render("/thanks.html", redirect=redirect)
+
     def blog_comment_or_vote(self, redirect):
         """Comment or vote on a blog_post."""
+
         voteType = self.request.get("voteDirection")
+        comment_id = self.request.get("comment_id")
         comment = self.request.get("comment")
         delete_comment = self.request.get("delete_comment")
         blog_id = self.request.get("blog_id")
-        comment_id = self.request.get("comment_id")
         blog_entry = BlogEntity.get_by_id_str(blog_id)
         if voteType and blog_entry:
             try:
@@ -138,32 +166,15 @@ class Handler(webapp2.RequestHandler):
             except myExceptions.VoteOnOwnPostNotAllowed:
                 self.redirect("/error?errorType=VoteOnOwnPostNotAllowed")
             except BadValueError:
-                #  TODO: Create for this in error.html
-                #  TODO: Create error-method which does POST instead of GET.
                 self.redirect("/error?errorType=BadValueError")
         elif comment and blog_entry:
-            if len(comment) >= 1:
-                if comment_id:
-                    comment_entry = CommentsEntity.get_by_id_str(comment_id)
-                    if (comment_entry and
-                            comment_entry.commentOn.key().id() == blog_entry.key().id()):
-                        if comment_entry.commentBy.key().id() == self.user.key().id():
-                            if delete_comment:
-                                comment_entry.delete()
-                            else:
-                                comment_entry.comment = comment
-                                comment_entry.put()
-                            self.render("/thanks.html", redirect=redirect)
-                    else:
-                        self.redirect("/error?errorType=BadValueError")
-                else:
-                    blog_entry.add_comment(
-                        commentBy=self.user, comment=comment)
-                    self.render("/thanks.html", redirect=redirect)
-            else:
-                pass
+            self.blog_comment(comment,
+                              blog_entry,
+                              comment_id,
+                              delete_comment,
+                              redirect)
+
         else:
-            # TODO: Create for this in error.html
             self.redirect("/error?errorType=unknown")
 
 
