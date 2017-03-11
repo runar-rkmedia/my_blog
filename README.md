@@ -2,7 +2,7 @@
 
 This is part of an assignment in the Full-Stack-course at Udacity. The goal is to create a multi-user-blog, deployed using Google App Engine.
 
-THe project can be seen at [wwww.Causal-destiny-157016.appspot.com](http://causal-destiny-157016.appspot.com)
+THe project can be seen at [Causal-destiny-157016.appspot.com](http://causal-destiny-157016.appspot.com)
 
 ## Installation
 
@@ -41,17 +41,17 @@ dev_appserver.py .
 - [X] After logging out, the cookie is cleared and user is redirected to the Signup page from Step 2.
 
 ### 5: Add Other Features on Your Own
-- [ ] Users should only be able to edit/delete their posts. They receive an error message if they disobey this rule.
+- [X] Users should only be able to edit/delete their posts. They receive an error message if they disobey this rule.
 - [X] Users can like/unlike posts, but not their own. They receive an error message if they disobey this rule.
-- [ ] Users can comment on posts. They can only edit/delete their own posts, and they should receive an error message if they disobey this rule.
+- [X] Users can comment on posts. They can only edit/delete their own posts, and they should receive an error message if they disobey this rule.
 
 
 ### 6: Final Touches
 
 - [X] Create a README.md file explaining how to run your code.
 - [X] Refactor your code so it is well structured, well commented, and conforms to the Python Style Guide.
-- [ ] Make sure your project conforms to the rubric.
+- [X] Make sure your project conforms to the rubric.
 - [X] Deploy your app to appspot.com using gcloud app deploy.
 - [X] Submit your project.
-- [ ] Revise your project and resubmit as necessary.
+- [X] Revise your project and resubmit as necessary.
 - [ ] Pat yourself on the back!
