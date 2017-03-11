@@ -146,6 +146,16 @@ class Handler(webapp2.RequestHandler):
             self.redirect(
                 '/error?error=NotValidBlogUser')
 
+    def delete_post(self, blog_entry):
+        """Delte a blog_post."""
+        if blog_entry:
+            try:
+                blog_entry.delete_post(self.user)
+                self.redirect('/blogs')
+            except myExceptions.EditOthersPosts:
+                self.redirect(
+                    '/error?error=NotValidBlogUser')
+
     def blog_comment(self,
                      comment,
                      blog_entry,
@@ -350,12 +360,7 @@ class EditBlogPost(Handler):
                 self.redirect('/login')
             elif deletePost:
                 if deletion_verified:
-                    try:
-                        blog_entry.delete_post(self.user)
-                        self.redirect('/blogs')
-                    except myExceptions.EditOthersPosts:
-                        self.redirect(
-                            '/error?error=NotValidBlogUser')
+                    self.delete_post(blog_entry)
                 else:
                     self.render_this(blog_entry=blog_entry,
                                      title=title,
