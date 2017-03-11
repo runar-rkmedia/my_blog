@@ -121,12 +121,6 @@ class Handler(webapp2.RequestHandler):
         return self.render_str("view_blog_entry.html",
                                blog_entry=blog_entry, **kw)
 
-    def render_page_buttons(self, pages, currentPage):
-        """Render an html-element for a page-navigation."""
-        return self.render_str("page-buttons.html",
-                               pages=pages,
-                               currentPage=currentPage)
-
     def blog_comment(self,
                      comment,
                      blog_entry,
@@ -230,8 +224,8 @@ class Blogs(Handler):
 
         self.render("blogs.html", articles=articles,
                     parser=self.render_blog_article,
-                    pageButtons=self.render_page_buttons(
-                        totalPages, page_to_show))
+                    pages=totalPages,
+                    currentPage=page_to_show)
 
 
 class BlogPost(Handler):

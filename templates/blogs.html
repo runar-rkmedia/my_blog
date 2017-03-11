@@ -6,7 +6,9 @@
         <h2>Blog posts</h2>
     </div>
     <div class="row">
-        <div class="one-half u-pull-right">{{ pageButtons | safe}}</div>
+        <div class="one-half u-pull-right">
+            {% include 'page-buttons.html' %}
+        </div>
     </div>
     <div class="row">
         {% for article in articles %}
@@ -15,6 +17,7 @@
         {% endfor %}
     </div>
     <div class="row">
-        <div class="one-half u-pull-right">{{ pageButtons | safe}}</div>
+        <div class="one-half u-pull-right">
+            {% include 'page-buttons.html' %}</div>
     </div>
 {% endblock %}
