@@ -194,7 +194,6 @@ class Handler(webapp2.RequestHandler):
         delete_comment = self.request.get("delete_comment")
         blog_id = self.request.get("blog_id")
         blog_entry = BlogEntity.get_by_id_str(blog_id)
-        print comment , blog_id
         if voteType and blog_entry:
             try:
                 blog_entry = BlogEntity.get_by_id_str(blog_id)
