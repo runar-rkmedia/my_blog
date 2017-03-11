@@ -102,7 +102,8 @@ class BlogEntity(db.Model):
         """Delete this post, and all comments and votes related to it."""
         if user.key().id() == self.created_by.key().id():
             blog_entry_votes = VotesEntity.all().filter('voteOn = ', self)
-            blog_entry_comments = CommentsEntity.all().filter('commentOn = ', self)
+            blog_entry_comments = CommentsEntity.all().filter(
+                'commentOn = ', self)
             db.delete(blog_entry_votes)
             db.delete(blog_entry_comments)
             db.delete(self)

@@ -20,11 +20,11 @@ title_list = [
     'Cillum incididunt ullamco adipisicing aute dolore amet adipisicing.',
     'Ut sit magna duis est eiusmod incididunt deserunt ea elit sunt amet.',
     'Laborum non enim quis fugiat culpa fugiat dolore consequat laboris.',
-    'Cupidatat minim enim consequat laboris aute elit et excepteur nisi officia.',
+    'Cupidatat minim enim consequat laboris aute elit et excepteur nisi.',
     'Anim non ipsum labore enim consectetur pariatur laborum officia.',
     'Nisi aliquip tempor qui labore occaecat id deserunt et.',
     'Eu deserunt adipisicing laborum sint labore proident ipsum.',
-    'Eiusmod dolore cupidatat pariatur anim deserunt voluptate minim non enim.',
+    'Eiusmod dolore cupidatat pariatur anim deserunt voluptate minim non.',
     'Eiusmod velit proident minim amet exercitation sunt duis.'
 ]
 

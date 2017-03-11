@@ -73,7 +73,7 @@
     <div class="blog-entry-body">
         <p class="blog-entry-body-p">{{ blog_entry.output_html_article() | safe }}</p>
     </div>
-{% if single_post %}
-{% include 'view_comments.html' %}
-{% endif %}
+    {% if single_post %}
+        {% include 'view_comments.html' %}
+    {% endif %}
 </div>

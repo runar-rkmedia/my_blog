@@ -96,7 +96,6 @@ class Handler(webapp2.RequestHandler):
 
     def perform_login(self, username, expires=None):
         """Set the user-cookie in the browser and redirect."""
-        new_cookie_val = make_secure_val(str(username))
         self.set_secure_cookie('user', username, expires)
 
         self.redirect("/thanks?redirect=/welcome")
