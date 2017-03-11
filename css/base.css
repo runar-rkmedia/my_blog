@@ -192,6 +192,11 @@ input.button-dangerous {
     background-color: red;
 }
 
+.button-cancel {
+  color: white;
+  background-color: red;
+}
+
 @media (max-width: 767px) {
     .container {
         padding: 10px 15px;
