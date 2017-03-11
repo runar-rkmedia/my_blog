@@ -121,6 +121,31 @@ class Handler(webapp2.RequestHandler):
         return self.render_str("view_blog_entry.html",
                                blog_entry=blog_entry, **kw)
 
+    def edit_post(self, blog_entry, title, article):
+        """Edit a post."""
+        if (blog_entry and self.user):
+            if title and article:
+                try:
+                    blog_entry.edit_blog_entry(created_by=self.user,
+                                               title=title,
+                                               article=article)
+                    self.redirect('/blogs/%s' %
+                                  str(blog_entry.key().id()))
+                except myExceptions.NotUnique:
+                    self.render_this(blog_entry=blog_entry,
+                                     title=title,
+                                     article=article,
+                                     error_notUnique=True)
+                except myExceptions.EditOthersPosts:
+                    self.redirect(
+                        '/error?error=NotValidBlogUser')
+            else:
+                self.render_this(title=title, article=article,
+                                 error_missing_fields=True)
+        else:
+            self.redirect(
+                '/error?error=NotValidBlogUser')
+
     def blog_comment(self,
                      comment,
                      blog_entry,
@@ -294,7 +319,7 @@ class EditBlogPost(Handler):
             self.render('new_blog_post.html', title=title,
                         article=article, blog_entry=blog_entry, **kw)
         else:
-            self.redirect("/error?errorType=Not_valid_blog_id_or_wrong_user")
+            self.redirect("/error?errorType=NotValidBlogUser")
 
     def get(self):
         """If blog_id is in url, lookup BlogEntity and pass along"""
@@ -305,7 +330,7 @@ class EditBlogPost(Handler):
                              title=blog_entry.title,
                              article=blog_entry.article)
         else:
-            self.render('/error?error=Not_valid_blog_id_or_wrong_user')
+            self.render('/error?error=NotValidBlogUser')
 
     def post(self):
         """Create/edit a blog-entry if logged in and form filled correcly."""
@@ -325,36 +350,20 @@ class EditBlogPost(Handler):
                 self.redirect('/login')
             elif deletePost:
                 if deletion_verified:
-                    blog_entry.delete_post(self.user)
-                    self.redirect('/blogs')
+                    try:
+                        blog_entry.delete_post(self.user)
+                        self.redirect('/blogs')
+                    except myExceptions.EditOthersPosts:
+                        self.redirect(
+                            '/error?error=NotValidBlogUser')
                 else:
                     self.render_this(blog_entry=blog_entry,
                                      title=title,
                                      article=article,
                                      verify_deletion=True)
-            else:
-                if (blog_entry and self.user and
-                        self.user.key().id() ==
-                        blog_entry.created_by.key().id()):
-                    if title and article:
-                        try:
-                            blog_entry.edit_blog_entry(created_by=self.user,
-                                                       title=title,
-                                                       article=article)
-                            self.redirect('/blogs/%s' %
-                                          str(blog_entry.key().id()))
-                        except myExceptions.NotUnique:
-                            self.render_this(blog_entry=blog_entry,
-                                             title=title,
-                                             article=article,
-                                             error_notUnique=True)
 
-                    else:
-                        self.render_this(title=title, article=article,
-                                         error_missing_fields=True)
-                else:
-                    self.redirect(
-                        '/error?error=Not_valid_blog_id_or_wrong_user')
+            else:
+                self.edit_post(blog_entry, title, article)
 
 
 class Login(Handler):
