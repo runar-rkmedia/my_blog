@@ -140,7 +140,7 @@ class Handler(webapp2.RequestHandler):
                         comment_entry.delete()
                     else:
                         # Edit comment
-                        comment_entry.edit_comment(comment)
+                        comment_entry.edit_comment(comment, self.user)
                     self.render("/thanks.html", redirect=redirect)
         elif blog_entry:
             # New comment

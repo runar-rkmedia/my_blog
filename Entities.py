@@ -183,8 +183,11 @@ class CommentsEntity(db.Model):
             'commentOn = ', commentOn)
         return comments
 
-    def edit_comment(self, comment):
+    def edit_comment(self, comment, commentBy):
         """Change the comment(text)."""
+        if commentBy.key().id() != self.commentBy.key().id():
+            raise myExceptions.EditOthersComments(
+                "You don't have access to editing this post")
         if not CommentsEntity.verify_comment(comment):
             raise myExceptions.TooShort("Comment is too short")
         self.comment = comment.strip()
