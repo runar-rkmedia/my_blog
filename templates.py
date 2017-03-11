@@ -126,6 +126,7 @@ class Handler(webapp2.RequestHandler):
         """Comment or vote on a blog_post."""
         voteType = self.request.get("voteDirection")
         comment = self.request.get("comment")
+        delete_comment = self.request.get("delete_comment")
         blog_id = self.request.get("blog_id")
         comment_id = self.request.get("comment_id")
         blog_entry = BlogEntity.get_by_id_str(blog_id)
@@ -147,8 +148,11 @@ class Handler(webapp2.RequestHandler):
                     if (comment_entry and
                             comment_entry.commentOn.key().id() == blog_entry.key().id()):
                         if comment_entry.commentBy.key().id() == self.user.key().id():
-                            comment_entry.comment = comment
-                            comment_entry.put()
+                            if delete_comment:
+                                comment_entry.delete()
+                            else:
+                                comment_entry.comment = comment
+                                comment_entry.put()
                             self.render("/thanks.html", redirect=redirect)
                     else:
                         self.redirect("/error?errorType=BadValueError")
