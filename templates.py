@@ -175,7 +175,6 @@ class Handler(webapp2.RequestHandler):
             except BadValueError:
                 self.redirect("/error?errorType=BadValueError")
         elif comment and blog_entry:
-            print 'lkj'
             self.blog_comment(comment,
                               blog_entry,
                               comment_id,
@@ -324,38 +323,44 @@ class EditBlogPost(Handler):
         blog_entry = BlogEntity.get_by_id_str(blog_id)
         deletePost = bool(self.request.get("delete"))
         deletion_verified = bool(self.request.get("verify_deletion_checkbox"))
-        if not self.user:
-            self.redirect('/login')
-        elif deletePost:
-            if deletion_verified:
-                blog_entry.delete_post(self.user)
-                self.redirect('/blogs')
-            else:
-                self.render_this(blog_entry=blog_entry,
-                                 title=title,
-                                 article=article,
-                                 verify_deletion=True)
+        cancel = bool(self.request.get("cancel"))
+        if cancel:
+            self.redirect('/blogs/%s' % blog_id)
         else:
-            if (blog_entry and self.user and
-                    self.user.key().id() == blog_entry.created_by.key().id()):
-                if title and article:
-                    try:
-                        blog_entry.edit_blog_entry(created_by=self.user,
-                                                   title=title,
-                                                   article=article)
-                        self.redirect('/blogs/%s' % str(blog_entry.key().id()))
-                    except myExceptions.NotUnique:
-                        self.render_this(blog_entry=blog_entry,
-                                         title=title,
-                                         article=article,
-                                         error_notUnique=True)
-
+            if not self.user:
+                self.redirect('/login')
+            elif deletePost:
+                if deletion_verified:
+                    blog_entry.delete_post(self.user)
+                    self.redirect('/blogs')
                 else:
-                    self.render_this(title=title, article=article,
-                                     error_missing_fields=True)
+                    self.render_this(blog_entry=blog_entry,
+                                     title=title,
+                                     article=article,
+                                     verify_deletion=True)
             else:
-                self.redirect(
-                    '/error?error=Not_valid_blog_id_or_wrong_user')
+                if (blog_entry and self.user and
+                        self.user.key().id() ==
+                        blog_entry.created_by.key().id()):
+                    if title and article:
+                        try:
+                            blog_entry.edit_blog_entry(created_by=self.user,
+                                                       title=title,
+                                                       article=article)
+                            self.redirect('/blogs/%s' %
+                                          str(blog_entry.key().id()))
+                        except myExceptions.NotUnique:
+                            self.render_this(blog_entry=blog_entry,
+                                             title=title,
+                                             article=article,
+                                             error_notUnique=True)
+
+                    else:
+                        self.render_this(title=title, article=article,
+                                         error_missing_fields=True)
+                else:
+                    self.redirect(
+                        '/error?error=Not_valid_blog_id_or_wrong_user')
 
 
 class Login(Handler):
@@ -370,14 +375,12 @@ class Login(Handler):
         username = self.request.get("username")
         password = self.request.get("password")
         remember_me = self.request.get("remember_me")
-        print 'sdafsdfasdcfwetr1354', remember_me, '   p  '
 
         valid_login = UserEntity.check_username_password(username, password)
 
         if valid_login:
             expires = None
             if remember_me:
-                print 'sdafsdfasdcfwetr1354'
                 expires = 30
             self.perform_login(username, expires)
         else:
