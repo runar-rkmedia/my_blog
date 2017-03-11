@@ -84,7 +84,12 @@
                             {{comment.commentBy.username}}
                             &ndash;
                             {{ comment.created|datetime}}
+                            {% if comment.created | datetime != comment.last_modified | datetime %}
+                            &ndash;
+                                <span class="blog-entry-last-modified">Modified {{ comment.last_modified|datetime}}</span>
+                            {% endif %}
                             {% if user and user.key().id() == comment.commentBy.key().id() %}
+                                                        &ndash;
                                 <a href="javascript:;" onclick="edit_comment({{ loop.index0 }}, '{{ comment.comment}}','{{ comment.key().id() }}')">Edit</a>
                             {% endif %}
                         </div>

@@ -191,6 +191,7 @@ class CommentsEntity(db.Model):
         if not CommentsEntity.verify_comment(comment):
             raise myExceptions.TooShort("Comment is too short")
         self.comment = comment.strip()
+        self.last_modified = datetime.datetime.now()
         self.put()
         return self
 
