@@ -159,8 +159,16 @@ class CommentsEntity(db.Model):
             return CommentsEntity.get_by_id(int(comment_id))
 
     @classmethod
+    def verify_comment(cls, comment):
+        """Verify that the comment is valid."""
+        return len(comment) > 2
+
+    @classmethod
     def comment_on_post(cls, commentBy, commentOn, comment):
         """Create a comment."""
+        comment = comment.strip()
+        if not CommentsEntity.verify_comment(comment):
+            raise myExceptions.TooShort("Comment is too short.")
         comment_entry = CommentsEntity(
             commentBy=commentBy,
             commentOn=commentOn,
@@ -174,6 +182,14 @@ class CommentsEntity(db.Model):
         comments = CommentsEntity.all().filter(
             'commentOn = ', commentOn)
         return comments
+
+    def edit_comment(self, comment):
+        """Change the comment(text)."""
+        if not CommentsEntity.verify_comment(comment):
+            raise myExceptions.TooShort("Comment is too short")
+        self.comment = comment.strip()
+        self.put()
+        return self
 
 
 class VotesEntity(db.Model):

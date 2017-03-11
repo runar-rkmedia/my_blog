@@ -140,21 +140,23 @@ class Handler(webapp2.RequestHandler):
                         comment_entry.delete()
                     else:
                         # Edit comment
-                        comment_entry.comment = comment
-                        comment_entry.put()
+                        comment_entry.edit_comment(comment)
                     self.render("/thanks.html", redirect=redirect)
         elif blog_entry:
             # New comment
-            blog_entry.add_comment(
-                commentBy=self.user, comment=comment)
-            self.render("/thanks.html", redirect=redirect)
+            try:
+                blog_entry.add_comment(
+                    commentBy=self.user, comment=comment)
+                self.render("/thanks.html", redirect=redirect)
+            except myExceptions.TooShort as e:
+                self.redirect("/error?errorType=TooShort&errorMsg=", e)
 
     def blog_comment_or_vote(self, redirect):
         """Comment or vote on a blog_post."""
 
         voteType = self.request.get("voteDirection")
         comment_id = self.request.get("comment_id")
-        comment = self.request.get("comment")
+        comment = self.request.get("comment").strip()
         delete_comment = self.request.get("delete_comment")
         blog_id = self.request.get("blog_id")
         blog_entry = BlogEntity.get_by_id_str(blog_id)
@@ -168,12 +170,14 @@ class Handler(webapp2.RequestHandler):
             except BadValueError:
                 self.redirect("/error?errorType=BadValueError")
         elif comment and blog_entry:
+            print 'lkj'
             self.blog_comment(comment,
                               blog_entry,
                               comment_id,
                               delete_comment,
                               redirect)
-
+        elif blog_entry:
+            self.redirect("/error?errorType=TooShort")
         else:
             self.redirect("/error?errorType=unknown")
 
@@ -305,7 +309,7 @@ class EditBlogPost(Handler):
     def post(self):
         """Create/edit a blog-entry if logged in and form filled correcly."""
         title = self.request.get("title").strip()
-        article = self.request.get("article")
+        article = self.request.get("article").strip()
 
         # If user is editing a post, we should get a blog_id
         blog_id = self.request.get("blog_id")

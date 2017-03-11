@@ -12,9 +12,10 @@
       Voting on yourself is not allowed
       {% elif errorType=='Not_valid_blog_id_or_wrong_user' %}
       This is not a valid post, or you do not have the rights to access this page.
+      {% elif errorType=='TooShort' %}
+      The field is too short.
       {% endif %}
     </h2>
-    <p>Shame on you for attemtping to cheat, but we all do it. Click <a href="{{ redirect }}">here</a> to get back</p>
 
   </body>
 </html>
