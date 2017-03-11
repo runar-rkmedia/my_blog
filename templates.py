@@ -196,7 +196,7 @@ class Welcome(Handler):
         if self.user:
             self.render("/welcome.html", username=self.user.username)
         else:
-            self.redirect('/error')
+            self.redirect("/error?errorType=UserNotLoggedIn")
 
 
 class Thanks(Handler):
