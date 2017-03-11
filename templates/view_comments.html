@@ -15,7 +15,7 @@
                     {% endif %}
                     {% if user and user.key().id() == comment.commentBy.key().id() %}
                         &ndash;
-                        <a href="javascript:;" onclick="edit_comment({{ loop.index0 }}, '{{ comment.comment}}','{{ comment.key().id() }}')">Edit</a>
+                        <a href="javascript:;" onclick="edit_comment({{ loop.index0 }}, '{{ comment.comment}}','{{ comment.key().id() }}', '{{ blog_entry.key().id() }}')">Edit</a>
                     {% endif %}
                 </div>
                 <div class="comment-id-body" id="comment-id-body-{{ loop.index0 }}">
